@@ -1,0 +1,987 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ symbol }} GEX Dashboard</title>
+<style>
+ body { font-family: -apple-system, Arial, sans-serif; background:#0b0e14; color:#e6e6e6; margin:0; padding:24px; }
+ h1 { font-size:20px; margin-bottom:4px; }
+ h3 { font-size:14px; color:#ccc; margin-top:28px; }
+ .sub { color:#888; margin-bottom:20px; font-size:13px; }
+ .cards { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+ .card { background:#161b22; border:1px solid #262c36; border-radius:8px; padding:12px 16px; min-width:130px; }
+ .card .label { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:.04em; }
+ .card .value { font-size:20px; font-weight:600; margin-top:4px; }
+ .pos { color:#4caf50; } .neg { color:#e05252; }
+ table { border-collapse: collapse; width:100%; font-size:13px; }
+ th, td { border-bottom:1px solid #262c36; padding:6px 10px; text-align:right; }
+ th { color:#888; font-weight:500; }
+ td:first-child, th:first-child { text-align:left; }
+ .spotrow { background:#1b2430; }
+ #events { background:#161b22; border:1px solid #262c36; border-radius:8px; padding:12px 16px; max-height:280px; overflow-y:auto; font-size:13px; }
+ #events div { padding:3px 0; border-bottom:1px solid #1e2530; }
+ #events div:last-child { border-bottom:none; }
+ .trade-history { background:#161b22; border:1px solid #262c36; border-radius:8px; overflow-x:auto; }
+ .trade-history table { min-width:760px; }
+ .trade-history .buy { color:#4caf50; font-weight:700; }
+ .trade-history .sell { color:#e05252; font-weight:700; }
+ .err { color:#e05252; margin-bottom:12px; font-size:13px; }
+
+
+ .meter-wrap { background:#161b22; border:1px solid #262c36; border-radius:8px; padding:14px 16px; margin-bottom:8px; }
+ .meter-labels { display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; }
+ .meter-bar { display:flex; height:14px; border-radius:7px; overflow:hidden; background:#1e2530; }
+ .meter-bar .call-fill { background:#4caf50; }
+ .meter-bar .put-fill { background:#e05252; }
+ .meter-ratio { text-align:center; font-size:12px; color:#888; margin-top:8px; }
+
+
+ .leader-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+ .leader-col h4 { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.04em; margin:0 0 8px; font-weight:500; }
+ .leader-col table { font-size:12px; }
+ @media (max-width: 720px) { .leader-grid { grid-template-columns: 1fr; } }
+
+
+ .chart-card { background:#161b22; border:1px solid #262c36; border-radius:8px; padding:16px; margin-bottom:8px; }
+ .chart-card svg text { fill:#888; font-size:11px; font-family:inherit; }
+ .chart-card svg .axis-line { stroke:#262c36; stroke-width:1; }
+ .chart-card svg .zero-line { stroke:#3a4150; stroke-width:1; }
+ .chart-card svg .spot-line { stroke:#4a9eff; stroke-width:1.5; stroke-dasharray:4,3; }
+ .chart-card svg .spot-label { fill:#4a9eff; font-weight:600; }
+ .chart-empty { color:#666; font-size:13px; padding:20px 0; text-align:center; }
+ .chart-note { color:#7d8590; font-size:12px; margin:-2px 0 10px; }
+ .chart-legend { display:flex; gap:16px; font-size:12px; color:#888; margin-bottom:8px; flex-wrap:wrap; }
+ .chart-legend span { display:flex; align-items:center; gap:6px; }
+ .chart-legend .dot { width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+
+ .chart-card svg .price-level { stroke-width:1; stroke-dasharray:5,4; opacity:.75; }
+ .chart-card svg .gamma-level { stroke-width:1.5; }
+ .chart-card svg .flip-line { stroke:#b07cff; stroke-width:1.5; stroke-dasharray:6,3; }
+ .chart-card svg .level-tag { font-size:10.5px; font-weight:600; }
+ .level-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+ .level-col h4 { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.04em; margin:0 0 8px; font-weight:500; }
+ .level-col table { font-size:12px; }
+ .side-above { color:#4caf50; } .side-below { color:#e05252; }
+ @media (max-width: 720px) { .level-grid { grid-template-columns: 1fr; } }
+ .note { color:#7d8590; font-size:12px; margin:4px 0 12px; }
+
+
+ .state-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; letter-spacing:.03em; }
+ .state-TESTING, .state-RETESTING, .state-CLAIM_CANDIDATE { background:rgba(210,153,34,.18); color:#d29922; }
+ .state-CLAIMED { background:rgba(76,175,80,.18); color:#4caf50; }
+ .state-ABOVE { color:#4caf50; }
+ .state-REJECTED, .state-LOST { background:rgba(224,82,82,.18); color:#e05252; }
+ .state-BELOW { color:#e05252; }
+ #commentary { background:#161b22; border:1px solid #262c36; border-radius:8px; padding:12px 16px; font-size:13px; }
+ #commentary div { padding:5px 0; border-bottom:1px solid #1e2530; }
+ #commentary div:last-child { border-bottom:none; }
+</style>
+</head>
+<body>
+ <h1>{{ symbol }} Gamma Exposure — {{ expiration }}</h1>
+ <div class="sub">Polling Tradier every {{ poll_seconds }}s · educational structural monitor, not investment advice.</div>
+ <div id="error" class="err"></div>
+
+
+ <div class="cards" id="cards"></div>
+
+ <h3>Trade Idea</h3>
+ <div id="tradeIdea" class="card"></div>
+
+ <h3>Trade Idea Timeline</h3>
+ <div class="note">A new row is saved only after a direction or SMC/liquidity shift, or a target/stop move of at least {{ trade_major_shift_points }} points.</div>
+ <div id="tradeHistory" class="trade-history"></div>
+
+
+ <h3>Level State Engine</h3>
+ <div class="note">
+   Every important level (gamma concentrations, gamma flip, PDH/PDL/PWH/PWL,
+   session highs/lows, VWAP) tracked through a claim/rejection state machine —
+   a single touch is not a rejection and a single cross is not a claim.
+ </div>
+ <table id="levelStateTable">
+   <thead>
+     <tr><th>Level</th><th>Price</th><th>Distance</th><th>State</th></tr>
+   </thead>
+   <tbody></tbody>
+ </table>
+
+
+ <h3>Market Commentary</h3>
+ <div id="commentary"></div>
+
+
+ <h3>Price &amp; Levels</h3>
+ <div class="chart-card">
+   <div class="chart-legend">
+     <span><span class="dot" style="background:#4caf50;"></span>Call-dominant gamma</span>
+     <span><span class="dot" style="background:#e05252;"></span>Put-dominant gamma</span>
+     <span><span class="dot" style="background:#b07cff;"></span>Gamma flip</span>
+     <span><span class="dot" style="background:#c9a227;"></span>Prior day / week</span>
+     <span><span class="dot" style="background:#4a9eff;"></span>Session levels / VWAP</span>
+   </div>
+   <div id="priceChart"></div>
+ </div>
+
+
+ <h3>Gamma Levels Relative to Spot</h3>
+ <div class="note">
+   A call-gamma concentration is not automatically resistance and a put-gamma
+   concentration is not automatically support — what matters is where the
+   gamma sits relative to spot, and where the gamma flip is.
+ </div>
+ <div class="level-grid">
+   <div class="level-col">
+     <h4>Gamma above spot</h4>
+     <table><thead><tr><th>Strike</th><th>Side</th><th>Net GEX</th><th>Dist</th></tr></thead>
+       <tbody id="gammaAbove"></tbody></table>
+   </div>
+   <div class="level-col">
+     <h4>Gamma below spot</h4>
+     <table><thead><tr><th>Strike</th><th>Side</th><th>Net GEX</th><th>Dist</th></tr></thead>
+       <tbody id="gammaBelow"></tbody></table>
+   </div>
+   <div class="level-col">
+     <h4>Price levels above spot</h4>
+     <table><thead><tr><th>Level</th><th>Price</th><th>Dist</th></tr></thead>
+       <tbody id="priceAbove"></tbody></table>
+   </div>
+   <div class="level-col">
+     <h4>Price levels below spot</h4>
+     <table><thead><tr><th>Level</th><th>Price</th><th>Dist</th></tr></thead>
+       <tbody id="priceBelow"></tbody></table>
+   </div>
+ </div>
+
+
+ <h3>Gamma Exposure — Per Strike</h3>
+ <div class="chart-card">
+   <div id="gammaChart"></div>
+ </div>
+
+
+ <h3>Dealer Supply &amp; Demand — Per Strike</h3>
+ <div class="chart-card">
+   <div class="chart-legend">
+     <span><span class="dot" style="background:#4caf50;"></span>Supply: positive call GEX</span>
+     <span><span class="dot" style="background:#e05252;"></span>Demand: negative put GEX</span>
+   </div>
+   <div class="chart-note">Estimated positioning pressure, not observed dealer orders. Spot is marked in blue.</div>
+   <div id="dealerSupplyDemandChart"></div>
+ </div>
+
+
+ <h3>Delta Exposure — Per Strike</h3>
+ <div class="chart-card">
+   <div class="chart-legend">
+     <span><span class="dot" style="background:#4caf50;"></span>Net positive (call-tilted)</span>
+     <span><span class="dot" style="background:#e05252;"></span>Net negative (put-tilted)</span>
+   </div>
+   <div id="deltaChart"></div>
+ </div>
+
+
+ <h3>Vega Exposure — Per Strike</h3>
+ <div class="chart-card">
+   <div class="chart-legend">
+     <span><span class="dot" style="background:#4caf50;"></span>Call vega</span>
+     <span><span class="dot" style="background:#e05252;"></span>Put vega</span>
+   </div>
+   <div id="vegaChart"></div>
+ </div>
+
+
+ <h3>Call vs Put Volume (today)</h3>
+ <div class="meter-wrap">
+   <div class="meter-labels">
+     <span id="callVolLabel" class="pos">Calls: -</span>
+     <span id="putVolLabel" class="neg">Puts: -</span>
+   </div>
+   <div class="meter-bar">
+     <div id="callFill" class="call-fill" style="width:50%"></div>
+     <div id="putFill" class="put-fill" style="width:50%"></div>
+   </div>
+   <div class="meter-ratio" id="pcRatioLabel">P/C volume ratio: -</div>
+ </div>
+
+
+ <h3>Strike Leaderboards</h3>
+ <div class="leader-grid">
+   <div class="leader-col">
+     <h4>Top strikes by Call OI (concentration)</h4>
+     <table><thead><tr><th>Strike</th><th>Call OI</th><th>Call Vol</th></tr></thead>
+       <tbody id="callOiLeaders"></tbody></table>
+   </div>
+   <div class="leader-col">
+     <h4>Top strikes by Put OI (concentration)</h4>
+     <table><thead><tr><th>Strike</th><th>Put OI</th><th>Put Vol</th></tr></thead>
+       <tbody id="putOiLeaders"></tbody></table>
+   </div>
+   <div class="leader-col">
+     <h4>Top strikes by Call Volume (today's flow)</h4>
+     <table><thead><tr><th>Strike</th><th>Call Vol</th><th>Call OI</th></tr></thead>
+       <tbody id="callVolLeaders"></tbody></table>
+   </div>
+   <div class="leader-col">
+     <h4>Top strikes by Put Volume (today's flow)</h4>
+     <table><thead><tr><th>Strike</th><th>Put Vol</th><th>Put OI</th></tr></thead>
+       <tbody id="putVolLeaders"></tbody></table>
+   </div>
+ </div>
+
+
+ <h3>Strikes near spot</h3>
+ <table id="strikeTable">
+   <thead>
+     <tr><th>Strike</th><th>Call OI</th><th>Put OI</th><th>Call GEX</th><th>Put GEX</th><th>Net GEX</th></tr>
+   </thead>
+   <tbody></tbody>
+ </table>
+
+
+ <h3>Event Log</h3>
+ <div id="events"></div>
+
+
+<script>
+const POLL_MS = {{ poll_seconds }} * 1000;
+
+
+function fmtB(n) {
+ if (n === null || n === undefined) return "-";
+ return (n / 1e9).toFixed(2) + "B";
+}
+function fmtNum(n) {
+ if (n === null || n === undefined) return "-";
+ return Number(n).toLocaleString(undefined, {maximumFractionDigits: 2});
+}
+
+
+function fmtGexAxis(n) {
+ const abs = Math.abs(n);
+ if (abs >= 1e9) return (n / 1e9).toFixed(1) + "B";
+ if (abs >= 1e6) return (n / 1e6).toFixed(0) + "M";
+ return String(Math.round(n));
+}
+
+
+function niceStep(maxAbs) {
+ const steps = [25e6, 50e6, 100e6, 250e6, 500e6, 1e9, 2e9, 2.5e9, 5e9, 10e9, 25e9, 50e9, 100e9];
+ for (const s of steps) {
+   if (maxAbs / s <= 4) return s;
+ }
+ return steps[steps.length - 1];
+}
+
+
+function renderGammaChart(containerId, table, markers, spot) {
+ const el = document.getElementById(containerId);
+ if (!table || table.length === 0) {
+   el.innerHTML = '<div class="chart-empty">Waiting for chain data...</div>';
+   return;
+ }
+
+
+ const width = Math.max(el.clientWidth || 900, 320);
+ const height = 320;
+ const mL = 55, mR = 20, mT = 20, mB = 46;
+ const plotW = width - mL - mR;
+ const plotH = height - mT - mB;
+
+
+ const n = table.length;
+ const band = plotW / n;
+ const barW = Math.max(2, band * 0.62);
+
+
+ let maxAbs = 0;
+ table.forEach(r => {
+   maxAbs = Math.max(maxAbs, Math.abs(r.call_gex || 0), Math.abs(r.put_gex || 0));
+ });
+ if (maxAbs === 0) maxAbs = 1e6;
+ const step = niceStep(maxAbs);
+ const axisMax = step * Math.ceil((maxAbs * 1.15) / step);
+
+
+ const zeroY = mT + plotH / 2;
+ const yScale = v => zeroY - (v / axisMax) * (plotH / 2);
+ const xCenter = i => mL + i * band + band / 2;
+
+
+ let svg = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`;
+
+
+ // gridlines + y-axis labels
+ for (let v = -axisMax; v <= axisMax + 1; v += step) {
+   const y = yScale(v);
+   svg += `<line class="axis-line" x1="${mL}" y1="${y}" x2="${width - mR}" y2="${y}"/>`;
+   svg += `<text x="${mL - 8}" y="${y + 4}" text-anchor="end">${fmtGexAxis(v)}</text>`;
+ }
+ svg += `<line class="zero-line" x1="${mL}" y1="${zeroY}" x2="${width - mR}" y2="${zeroY}"/>`;
+
+
+ // bars
+ table.forEach((r, i) => {
+   const cx = xCenter(i);
+   if (r.call_gex) {
+     const y = yScale(r.call_gex);
+     svg += `<rect x="${cx - barW / 2}" y="${Math.min(y, zeroY)}" width="${barW}" height="${Math.abs(zeroY - y)}" fill="#4caf50"/>`;
+   }
+   if (r.put_gex) {
+     const y = yScale(r.put_gex);
+     svg += `<rect x="${cx - barW / 2}" y="${Math.min(y, zeroY)}" width="${barW}" height="${Math.abs(zeroY - y)}" fill="#e05252"/>`;
+   }
+ });
+
+
+ // x-axis strike labels, thinned out if crowded
+ const labelEvery = Math.max(1, Math.ceil(n / 20));
+ table.forEach((r, i) => {
+   if (i % labelEvery !== 0) return;
+   const cx = xCenter(i);
+   svg += `<text x="${cx}" y="${height - mB + 16}" text-anchor="end" transform="rotate(-45 ${cx} ${height - mB + 16})">${r.strike}</text>`;
+ });
+
+
+ // put wall / call wall vertical markers
+ function strikeIndex(strikeVal) {
+   let best = -1, bestDiff = Infinity;
+   table.forEach((r, i) => {
+     const d = Math.abs(r.strike - strikeVal);
+     if (d < bestDiff) { bestDiff = d; best = i; }
+   });
+   return best;
+ }
+
+
+ // Spot-relative gamma markers, e.g. "gamma above" / "gamma below".
+ (markers || []).forEach((m, mi) => {
+   if (m.strike === null || m.strike === undefined) return;
+   const i = strikeIndex(m.strike);
+   if (i < 0) return;
+   const x = xCenter(i);
+   const y = mT + mi * 20;
+   const boxW = 12 + m.label.length * 6.2;
+   svg += `<line x1="${x}" y1="${mT}" x2="${x}" y2="${height - mB}" stroke="${m.color}" stroke-width="1.5"/>`;
+   svg += `<rect x="${x - boxW / 2}" y="${y}" width="${boxW}" height="18" rx="4" fill="#0b0e14" stroke="${m.color}" stroke-width="1"/>`;
+   svg += `<text x="${x}" y="${y + 13}" text-anchor="middle" fill="${m.color}" font-weight="600">${m.label}</text>`;
+ });
+
+
+ // spot line, positioned by interpolating between nearest strikes (not snapped to a bar)
+ if (spot !== null && spot !== undefined && table.length > 1) {
+   let li = 0;
+   for (let i = 0; i < table.length - 1; i++) {
+     if (table[i].strike <= spot && spot <= table[i + 1].strike) { li = i; break; }
+     if (spot < table[0].strike) { li = 0; break; }
+     if (spot > table[table.length - 1].strike) { li = table.length - 2; }
+   }
+   const s0 = table[li].strike, s1 = table[li + 1] ? table[li + 1].strike : s0;
+   const frac = s1 !== s0 ? (spot - s0) / (s1 - s0) : 0;
+   const x = xCenter(li) + frac * band;
+   svg += `<line class="spot-line" x1="${x}" y1="${mT}" x2="${x}" y2="${height - mB}"/>`;
+   const label = `spot ${spot.toFixed(2)}`;
+   const boxW = 16 + label.length * 6.2;
+   svg += `<rect x="${x - boxW / 2}" y="${height - mB - 22}" width="${boxW}" height="18" rx="4" fill="#0b0e14" stroke="#4a9eff" stroke-width="1"/>`;
+   svg += `<text class="spot-label" x="${x}" y="${height - mB - 9}" text-anchor="middle">${label}</text>`;
+ }
+
+
+ svg += `</svg>`;
+ el.innerHTML = svg;
+}
+
+
+function renderDealerSupplyDemandChart(containerId, table, spot) {
+ const el = document.getElementById(containerId);
+ if (!table || table.length === 0) {
+   el.innerHTML = '<div class="chart-empty">Waiting for GEX data...</div>';
+   return;
+ }
+ const width = Math.max(el.clientWidth || 900, 320), height = 320;
+ const mL = 55, mR = 20, mT = 20, mB = 46;
+ const plotW = width - mL - mR, plotH = height - mT - mB;
+ const band = plotW / table.length, barW = Math.max(2, band * 0.62);
+ let maxAbs = 0;
+ table.forEach(r => { maxAbs = Math.max(maxAbs, r.supply || 0, r.demand || 0); });
+ if (!maxAbs) maxAbs = 1e6;
+ const step = niceStep(maxAbs), axisMax = step * Math.ceil(maxAbs * 1.15 / step);
+ const zeroY = mT + plotH / 2;
+ const yScale = value => zeroY - (value / axisMax) * (plotH / 2);
+ const xCenter = index => mL + index * band + band / 2;
+ const parts = [`<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`];
+ for (let value = -axisMax; value <= axisMax + 1; value += step) {
+   const y = yScale(value);
+   parts.push(`<line class="axis-line" x1="${mL}" y1="${y}" x2="${width - mR}" y2="${y}"/>`);
+   parts.push(`<text x="${mL - 8}" y="${y + 4}" text-anchor="end">${fmtGexAxis(value)}</text>`);
+ }
+ parts.push(`<line class="zero-line" x1="${mL}" y1="${zeroY}" x2="${width - mR}" y2="${zeroY}"/>`);
+ table.forEach((row, index) => {
+   const x = xCenter(index), supply = row.supply || 0, demand = -(row.demand || 0);
+   if (supply) parts.push(`<rect x="${x - barW / 2}" y="${yScale(supply)}" width="${barW}" height="${zeroY - yScale(supply)}" fill="#4caf50"/>`);
+   if (demand) parts.push(`<rect x="${x - barW / 2}" y="${zeroY}" width="${barW}" height="${yScale(demand) - zeroY}" fill="#e05252"/>`);
+ });
+ const labelEvery = Math.max(1, Math.ceil(table.length / 20));
+ table.forEach((row, index) => {
+   if (index % labelEvery) return;
+   const x = xCenter(index);
+   parts.push(`<text x="${x}" y="${height - mB + 16}" text-anchor="end" transform="rotate(-45 ${x} ${height - mB + 16})">${row.strike}</text>`);
+ });
+ const spotX = findSpotX(table, spot, xCenter, band);
+ drawSpotLine(parts, spotX, spot, mT, height - mB);
+ parts.push(`</svg>`);
+ el.innerHTML = parts.join("");
+}
+
+
+function findSpotX(table, spot, xCenter, band) {
+ if (spot === null || spot === undefined || table.length < 2) return null;
+ let li = 0;
+ for (let i = 0; i < table.length - 1; i++) {
+   if (table[i].strike <= spot && spot <= table[i + 1].strike) { li = i; break; }
+   if (spot < table[0].strike) { li = 0; break; }
+   if (spot > table[table.length - 1].strike) { li = table.length - 2; }
+ }
+ const s0 = table[li].strike, s1 = table[li + 1] ? table[li + 1].strike : s0;
+ const frac = s1 !== s0 ? (spot - s0) / (s1 - s0) : 0;
+ return xCenter(li) + frac * band;
+}
+
+
+function drawSpotLine(svgParts, x, spot, top, bottom) {
+ if (x === null) return;
+ svgParts.push(`<line class="spot-line" x1="${x}" y1="${top}" x2="${x}" y2="${bottom}"/>`);
+ const label = `spot ${spot.toFixed(2)}`;
+ const boxW = 16 + label.length * 6.2;
+ svgParts.push(`<rect x="${x - boxW / 2}" y="${top - 22}" width="${boxW}" height="18" rx="4" fill="#0b0e14" stroke="#4a9eff" stroke-width="1"/>`);
+ svgParts.push(`<text class="spot-label" x="${x}" y="${top - 9}" text-anchor="middle">${label}</text>`);
+}
+
+
+function renderDeltaChart(containerId, table, spot) {
+ const el = document.getElementById(containerId);
+ if (!table || table.length === 0) {
+   el.innerHTML = '<div class="chart-empty">Waiting for chain data...</div>';
+   return;
+ }
+
+
+ const width = Math.max(el.clientWidth || 900, 320);
+ const height = 300;
+ const mL = 55, mR = 20, mT = 34, mB = 46;
+ const plotW = width - mL - mR;
+ const plotH = height - mT - mB;
+
+
+ const n = table.length;
+ const band = plotW / n;
+ const barW = Math.max(2, band * 0.62);
+
+
+ let maxAbs = 0;
+ table.forEach(r => { maxAbs = Math.max(maxAbs, Math.abs(r.net_dex || 0)); });
+ if (maxAbs === 0) maxAbs = 1e6;
+ const step = niceStep(maxAbs);
+ const axisMax = step * Math.ceil((maxAbs * 1.15) / step);
+
+
+ const zeroY = mT + plotH / 2;
+ const yScale = v => zeroY - (v / axisMax) * (plotH / 2);
+ const xCenter = i => mL + i * band + band / 2;
+
+
+ const parts = [`<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`];
+
+
+ for (let v = -axisMax; v <= axisMax + 1; v += step) {
+   const y = yScale(v);
+   parts.push(`<line class="axis-line" x1="${mL}" y1="${y}" x2="${width - mR}" y2="${y}"/>`);
+   parts.push(`<text x="${mL - 8}" y="${y + 4}" text-anchor="end">${fmtGexAxis(v)}</text>`);
+ }
+ parts.push(`<line class="zero-line" x1="${mL}" y1="${zeroY}" x2="${width - mR}" y2="${zeroY}"/>`);
+
+
+ table.forEach((r, i) => {
+   const cx = xCenter(i);
+   const val = r.net_dex || 0;
+   if (!val) return;
+   const y = yScale(val);
+   const color = val >= 0 ? "#4caf50" : "#e05252";
+   parts.push(`<rect x="${cx - barW / 2}" y="${Math.min(y, zeroY)}" width="${barW}" height="${Math.abs(zeroY - y)}" fill="${color}"/>`);
+ });
+
+
+ const labelEvery = Math.max(1, Math.ceil(n / 20));
+ table.forEach((r, i) => {
+   if (i % labelEvery !== 0) return;
+   const cx = xCenter(i);
+   parts.push(`<text x="${cx}" y="${height - mB + 16}" text-anchor="end" transform="rotate(-45 ${cx} ${height - mB + 16})">${r.strike}</text>`);
+ });
+
+
+ const spotX = findSpotX(table, spot, xCenter, band);
+ drawSpotLine(parts, spotX, spot, mT, height - mB);
+
+
+ parts.push(`</svg>`);
+ el.innerHTML = parts.join("");
+}
+
+
+function renderVegaChart(containerId, table, spot) {
+ const el = document.getElementById(containerId);
+ if (!table || table.length === 0) {
+   el.innerHTML = '<div class="chart-empty">Waiting for chain data...</div>';
+   return;
+ }
+
+
+ const width = Math.max(el.clientWidth || 900, 320);
+ const height = 300;
+ const mL = 55, mR = 20, mT = 34, mB = 46;
+ const plotW = width - mL - mR;
+ const plotH = height - mT - mB;
+ const baseY = height - mB;
+
+
+ const n = table.length;
+ const band = plotW / n;
+ const groupW = band * 0.7;
+ const barW = Math.max(2, groupW / 2 - 1);
+
+
+ let maxVal = 0;
+ table.forEach(r => { maxVal = Math.max(maxVal, r.call_vex || 0, r.put_vex || 0); });
+ if (maxVal === 0) maxVal = 1e6;
+ const step = niceStep(maxVal);
+ const axisMax = step * Math.ceil((maxVal * 1.15) / step);
+
+
+ const yScale = v => baseY - (v / axisMax) * plotH;
+ const xCenter = i => mL + i * band + band / 2;
+
+
+ const parts = [`<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`];
+
+
+ for (let v = 0; v <= axisMax + 1; v += step) {
+   const y = yScale(v);
+   parts.push(`<line class="axis-line" x1="${mL}" y1="${y}" x2="${width - mR}" y2="${y}"/>`);
+   parts.push(`<text x="${mL - 8}" y="${y + 4}" text-anchor="end">${fmtGexAxis(v)}</text>`);
+ }
+ parts.push(`<line class="zero-line" x1="${mL}" y1="${baseY}" x2="${width - mR}" y2="${baseY}"/>`);
+
+
+ table.forEach((r, i) => {
+   const cx = xCenter(i);
+   const callV = r.call_vex || 0;
+   const putV = r.put_vex || 0;
+   if (callV) {
+     const y = yScale(callV);
+     parts.push(`<rect x="${cx - groupW / 2}" y="${y}" width="${barW}" height="${baseY - y}" fill="#4caf50"/>`);
+   }
+   if (putV) {
+     const y = yScale(putV);
+     parts.push(`<rect x="${cx - groupW / 2 + barW + 2}" y="${y}" width="${barW}" height="${baseY - y}" fill="#e05252"/>`);
+   }
+ });
+
+
+ const labelEvery = Math.max(1, Math.ceil(n / 20));
+ table.forEach((r, i) => {
+   if (i % labelEvery !== 0) return;
+   const cx = xCenter(i);
+   parts.push(`<text x="${cx}" y="${height - mB + 16}" text-anchor="end" transform="rotate(-45 ${cx} ${height - mB + 16})">${r.strike}</text>`);
+ });
+
+
+ const spotX = findSpotX(table, spot, xCenter, band);
+ drawSpotLine(parts, spotX, spot, mT, baseY);
+
+
+ parts.push(`</svg>`);
+ el.innerHTML = parts.join("");
+}
+
+
+function levelColor(kind) {
+ if (kind === "daily" || kind === "weekly") return "#c9a227";
+ return "#4a9eff";
+}
+
+
+const LEVEL_SHORT = { "HIGH": "H", "LOW": "L" };
+
+
+function shortLevelName(name) {
+ return name.split(" ").map(w => LEVEL_SHORT[w] ?? w).join(" ");
+}
+
+
+// Collapse levels that sit within `tol` of each other into one labelled line.
+function mergeMarks(marks, tol) {
+ const groups = [];
+ marks.slice().sort((a, b) => b.price - a.price).forEach(m => {
+   const g = groups.find(x => Math.abs(x.price - m.price) <= tol);
+   if (g) {
+     g.names.push(m.name);
+     if (m.priority > g.priority) { g.color = m.color; g.cls = m.cls; g.priority = m.priority; }
+   } else {
+     groups.push({ price: m.price, names: [m.name], color: m.color, cls: m.cls, priority: m.priority });
+   }
+ });
+ return groups.map(g => {
+   const names = g.names.length > 2
+     ? `${g.names[0]} +${g.names.length - 1}`
+     : g.names.join(" · ");
+   return { ...g, label: `${names}  ${g.price.toFixed(2)}` };
+ });
+}
+
+
+// Push labels apart vertically so they never overlap, keeping them in the plot.
+function stackLabels(items, top, bottom, gap) {
+ const sorted = items.slice().sort((a, b) => a.y - b.y);
+ let cursor = top;
+ sorted.forEach(item => {
+   item.labelY = Math.max(item.y, cursor);
+   cursor = item.labelY + gap;
+ });
+ let limit = bottom;
+ for (let i = sorted.length - 1; i >= 0; i--) {
+   sorted[i].labelY = Math.min(sorted[i].labelY, limit);
+   limit = sorted[i].labelY - gap;
+ }
+ return sorted;
+}
+
+
+function renderPriceChart(containerId, bars, spot, priceLevels, gammaLevels, flip) {
+ const el = document.getElementById(containerId);
+ if (!bars || bars.length === 0) {
+   el.innerHTML = '<div class="chart-empty">Waiting for price data...</div>';
+   return;
+ }
+
+
+ const width = Math.max(el.clientWidth || 900, 320);
+ const height = 420;
+ const mL = 12, mR = 76, mT = 14, mB = 34;
+ const labelW = 132;
+ const plotW = width - mL - mR - labelW;
+ const plotH = height - mT - mB;
+ const plotX = mL + labelW;
+
+
+ // Levels shown on the chart: gamma concentrations + price structure + flip.
+ const marks = [];
+ (gammaLevels || []).forEach(g => {
+   if (g && g.strike !== null && g.strike !== undefined) {
+     marks.push({
+       price: g.strike,
+       name: g.label,
+       color: g.dominant_side === "put" ? "#e05252" : "#4caf50",
+       cls: "gamma-level",
+       priority: 2,
+     });
+   }
+ });
+ (priceLevels || []).forEach(p => {
+   marks.push({
+     price: p.price,
+     name: shortLevelName(p.name),
+     color: levelColor(p.kind),
+     cls: "price-level",
+     priority: p.kind === "vwap" ? 1 : 0,
+   });
+ });
+ if (flip !== null && flip !== undefined) {
+   marks.push({ price: flip, name: "FLIP", color: "#b07cff", cls: "flip-line", priority: 3 });
+ }
+
+
+ let lo = Math.min(...bars.map(b => b.low));
+ let hi = Math.max(...bars.map(b => b.high));
+ if (spot !== null && spot !== undefined) { lo = Math.min(lo, spot); hi = Math.max(hi, spot); }
+
+
+ // Keep far-away levels off the chart so the price action stays readable.
+ const pad = Math.max((hi - lo) * 0.35, 5);
+ const merged = mergeMarks(marks, Math.max((hi - lo) * 0.002, 0.5));
+ const visible = merged.filter(m => m.price >= lo - pad && m.price <= hi + pad);
+ visible.forEach(m => { lo = Math.min(lo, m.price); hi = Math.max(hi, m.price); });
+
+
+ if (hi === lo) { hi += 1; lo -= 1; }
+ const span = hi - lo;
+ lo -= span * 0.04;
+ hi += span * 0.04;
+
+
+ const yScale = v => mT + plotH - ((v - lo) / (hi - lo)) * plotH;
+ const band = plotW / bars.length;
+ const bodyW = Math.max(1.5, band * 0.6);
+ const xCenter = i => plotX + i * band + band / 2;
+
+
+ const parts = [`<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`];
+
+
+ const gridCount = 5;
+ for (let i = 0; i <= gridCount; i++) {
+   const v = lo + ((hi - lo) * i) / gridCount;
+   const y = yScale(v);
+   parts.push(`<line class="axis-line" x1="${plotX}" y1="${y}" x2="${width - mR}" y2="${y}"/>`);
+   parts.push(`<text x="${width - mR + 6}" y="${y + 4}" text-anchor="start">${v.toFixed(2)}</text>`);
+ }
+
+
+ // Level lines first so candles stay on top of them.
+ const stacked = stackLabels(
+   visible.map(m => ({ ...m, y: yScale(m.price) })),
+   mT + 6, height - mB - 4, 14,
+ );
+ stacked.forEach(m => {
+   parts.push(`<line class="${m.cls}" x1="${mL + labelW - 6}" y1="${m.y}" x2="${width - mR}" y2="${m.y}" stroke="${m.color}"/>`);
+   // Leader from the stacked label back to the true price line.
+   if (Math.abs(m.labelY - m.y) > 2) {
+     parts.push(`<line x1="${mL + labelW - 6}" y1="${m.y}" x2="${mL + labelW - 10}" y2="${m.labelY}" stroke="${m.color}" stroke-width="1" opacity="0.5"/>`);
+   }
+   parts.push(`<text class="level-tag" x="${mL + labelW - 14}" y="${m.labelY + 3.5}" text-anchor="end" fill="${m.color}">${m.label}</text>`);
+ });
+
+
+ bars.forEach((b, i) => {
+   const cx = xCenter(i);
+   const color = b.close >= b.open ? "#4caf50" : "#e05252";
+   parts.push(`<line x1="${cx}" y1="${yScale(b.high)}" x2="${cx}" y2="${yScale(b.low)}" stroke="${color}" stroke-width="1"/>`);
+   const yTop = yScale(Math.max(b.open, b.close));
+   const bodyH = Math.max(1, Math.abs(yScale(b.open) - yScale(b.close)));
+   parts.push(`<rect x="${cx - bodyW / 2}" y="${yTop}" width="${bodyW}" height="${bodyH}" fill="${color}"/>`);
+ });
+
+
+ const labelEvery = Math.max(1, Math.ceil(bars.length / 10));
+ bars.forEach((b, i) => {
+   if (i % labelEvery !== 0) return;
+   const t = b.time.slice(11, 16);
+   parts.push(`<text x="${xCenter(i)}" y="${height - mB + 16}" text-anchor="middle">${t}</text>`);
+ });
+
+
+ if (spot !== null && spot !== undefined) {
+   const y = yScale(spot);
+   parts.push(`<line class="spot-line" x1="${plotX}" y1="${y}" x2="${width - mR}" y2="${y}"/>`);
+   parts.push(`<rect x="${width - mR + 2}" y="${y - 9}" width="${mR - 6}" height="18" rx="4" fill="#0b0e14" stroke="#4a9eff" stroke-width="1"/>`);
+   parts.push(`<text class="spot-label" x="${width - mR + 8}" y="${y + 4}" text-anchor="start">${spot.toFixed(2)}</text>`);
+ }
+
+
+ parts.push(`</svg>`);
+ el.innerHTML = parts.join("");
+}
+
+
+async function poll() {
+ try {
+   const res = await fetch("/api/state");
+   const data = await res.json();
+   const s = data.latest;
+
+
+   document.getElementById("error").textContent = s.error ? ("Error: " + s.error) : "";
+
+
+   const netClass = (s.net_gex ?? 0) >= 0 ? "pos" : "neg";
+   const dexClass = (s.net_dex ?? 0) >= 0 ? "pos" : "neg";
+   const totalVega = (s.total_call_vega ?? 0) + (s.total_put_vega ?? 0);
+   const gl = s.gamma_levels || {};
+   const structure = s.price_structure || {};
+  const idea = s.trade_idea || {};
+   document.getElementById("cards").innerHTML = `
+     <div class="card"><div class="label">Spot</div><div class="value">${fmtNum(s.spot)}</div></div>
+     <div class="card"><div class="label">Net GEX</div><div class="value ${netClass}">${fmtB(s.net_gex)}</div></div>
+     <div class="card"><div class="label">Gamma Above Spot</div><div class="value">${fmtNum(s.upper_gamma_wall)}</div></div>
+     <div class="card"><div class="label">Gamma Below Spot</div><div class="value">${fmtNum(s.lower_gamma_wall)}</div></div>
+     <div class="card"><div class="label">Call Wall Above</div><div class="value">${fmtNum(s.call_wall_above)}</div></div>
+     <div class="card"><div class="label">Put Wall Below</div><div class="value">${fmtNum(s.put_wall_below)}</div></div>
+     <div class="card"><div class="label">Gamma Flip</div><div class="value">${fmtNum(s.flip_level)}</div></div>
+     <div class="card"><div class="label">VWAP</div><div class="value">${fmtNum(structure.vwap)}</div></div>
+     <div class="card"><div class="label">Max Pain</div><div class="value">${fmtNum(s.max_pain)}</div></div>
+     <div class="card"><div class="label">Net Delta Exp</div><div class="value ${dexClass}">${fmtB(s.net_dex)}</div></div>
+     <div class="card"><div class="label">Total Vega</div><div class="value">${fmtB(totalVega)}</div></div>
+     <div class="card"><div class="label">Updated</div><div class="value">${s.updated_at ?? "-"}</div></div>
+   `;
+   const ideaClass = idea.action === "BUY" ? "pos" : "neg";
+   document.getElementById("tradeIdea").innerHTML = `
+     <div class="label">Conditional SMC + GEX signal</div>
+     <div class="value ${ideaClass}">${idea.action || "-"}</div>
+     <div>Entry ${fmtNum(idea.entry)} · Target ${fmtNum(idea.target)} · Stop ${fmtNum(idea.stop_loss)}</div>
+     <div class="note">HTF ${idea.htf_bias || "-"} (${idea.htf_bullish_count || 0} bullish / ${idea.htf_bearish_count || 0} bearish) · 1M ${idea.entry_1m_bias || "-"} ${idea.entry_1m_confirmation || "-"}</div>
+     <div class="note">SMC ${idea.smc_bias || "-"} · BOS ${idea.bos || "-"} · ${idea.reason || "-"}</div>
+     <div class="note">Liquidity: ${idea.liquidity_path || "INTERNAL RANGE"} · external target ${fmtNum((idea.external_liquidity || {}).buy_side?.price || (idea.external_liquidity || {}).sell_side?.price)}</div>
+     <div class="note">FVG: ${idea.active_fvg ? idea.active_fvg.direction + " " + fmtNum(idea.active_fvg.low) + "-" + fmtNum(idea.active_fvg.high) : "-"} · Inverse FVG: ${idea.inverse_fvg?.direction || "-"}</div>
+     <div class="note">1M zone: ${idea.entry_1m_zone ? (idea.entry_1m_zone.direction || "ZONE") + " " + fmtNum(idea.entry_1m_zone.low) + "-" + fmtNum(idea.entry_1m_zone.high) : "-"} · 1M SD +1 ${fmtNum((idea.entry_1m_stddev || {}).upper_1)} / -1 ${fmtNum((idea.entry_1m_stddev || {}).lower_1)}</div>
+   `;
+   const history = document.getElementById("tradeHistory");
+   const historyRows = (data.trade_history || []).map(item => `
+     <tr>
+       <td>${item.time || "-"}</td>
+       <td class="${item.action === "BUY" ? "buy" : "sell"}">${item.action || "-"}</td>
+       <td>${fmtNum(item.entry)}</td>
+       <td>${fmtNum(item.target)}</td>
+       <td>${fmtNum(item.stop_loss)}</td>
+       <td>${item.smc_bias || "-"}</td>
+       <td>${item.liquidity_path || "-"}</td>
+       <td>${item.bos || "-"}</td>
+     </tr>
+   `).join("");
+   history.innerHTML = historyRows ? `
+     <table><thead><tr><th>Time</th><th>Action</th><th>Entry</th><th>Target</th><th>Stop</th><th>SMC</th><th>Liquidity</th><th>BOS</th></tr></thead>
+     <tbody>${historyRows}</tbody></table>
+   ` : '<div class="note" style="padding:12px 16px;">Waiting for the first trade idea...</div>';
+
+
+   // Call/put walls are dropped when they coincide with the strongest level.
+   const chartGammaLevels = [];
+   const addGamma = (level, label) => {
+     if (!level || chartGammaLevels.some(x => x.strike === level.strike)) return;
+     chartGammaLevels.push({...level, label});
+   };
+   addGamma(gl.upper_gamma_wall, "γ ABOVE");
+   addGamma(gl.lower_gamma_wall, "γ BELOW");
+   addGamma(gl.call_wall_above, "CALL γ");
+   addGamma(gl.put_wall_below, "PUT γ");
+
+
+   renderPriceChart("priceChart", s.price_bars, s.spot, s.price_levels, chartGammaLevels, s.flip_level);
+
+
+   const gammaMarkers = [];
+   if (gl.upper_gamma_wall) gammaMarkers.push({strike: gl.upper_gamma_wall.strike, label: "gamma above", color: "#4caf50"});
+   if (gl.lower_gamma_wall) gammaMarkers.push({strike: gl.lower_gamma_wall.strike, label: "gamma below", color: "#e05252"});
+   renderGammaChart("gammaChart", s.table, gammaMarkers, s.spot);
+  renderDealerSupplyDemandChart("dealerSupplyDemandChart", s.dealer_supply_demand, s.spot);
+   renderDeltaChart("deltaChart", s.dex_table, s.spot);
+   renderVegaChart("vegaChart", s.vex_table, s.spot);
+
+
+   function fillGammaLevels(elemId, rows) {
+     const tbody = document.getElementById(elemId);
+     tbody.innerHTML = "";
+     (rows || []).forEach(r => {
+       const tr = document.createElement("tr");
+       tr.innerHTML = `<td>${fmtNum(r.strike)}</td>` +
+         `<td class="${r.dominant_side === 'put' ? 'neg' : 'pos'}">${r.dominant_side}</td>` +
+         `<td class="${r.net_gex >= 0 ? 'pos' : 'neg'}">${fmtB(r.net_gex)}</td>` +
+         `<td>${r.distance >= 0 ? "+" : ""}${r.distance.toFixed(1)}</td>`;
+       tbody.appendChild(tr);
+     });
+   }
+   fillGammaLevels("gammaAbove", gl.levels_above);
+   fillGammaLevels("gammaBelow", gl.levels_below);
+
+
+   function fillPriceLevels(elemId, rows) {
+     const tbody = document.getElementById(elemId);
+     tbody.innerHTML = "";
+     (rows || []).forEach(r => {
+       const tr = document.createElement("tr");
+       tr.innerHTML = `<td>${r.name}</td><td>${r.price.toFixed(2)}</td>` +
+         `<td>${(r.distance ?? 0) >= 0 ? "+" : ""}${(r.distance ?? 0).toFixed(1)}</td>`;
+       tbody.appendChild(tr);
+     });
+   }
+   const allPriceLevels = s.price_levels || [];
+   fillPriceLevels("priceAbove", allPriceLevels.filter(x => x.side === "above").sort((a, b) => a.price - b.price));
+   fillPriceLevels("priceBelow", allPriceLevels.filter(x => x.side === "below").sort((a, b) => b.price - a.price));
+
+
+   const vm = s.volume_meter || {call_volume:0, put_volume:0, put_call_ratio:null, call_pct:50};
+   document.getElementById("callVolLabel").textContent = "Calls: " + fmtNum(vm.call_volume);
+   document.getElementById("putVolLabel").textContent = "Puts: " + fmtNum(vm.put_volume);
+   document.getElementById("callFill").style.width = (vm.call_pct ?? 50) + "%";
+   document.getElementById("putFill").style.width = (100 - (vm.call_pct ?? 50)) + "%";
+   document.getElementById("pcRatioLabel").textContent =
+     "P/C volume ratio: " + (vm.put_call_ratio === null ? "-" : vm.put_call_ratio.toFixed(2));
+
+
+   function fillLeaderTable(elemId, rows, primaryKey, secondaryKey) {
+     const tbody = document.getElementById(elemId);
+     tbody.innerHTML = "";
+     (rows || []).forEach(r => {
+       const tr = document.createElement("tr");
+       tr.innerHTML = `<td>${fmtNum(r.strike)}</td><td>${fmtNum(r[primaryKey])}</td><td>${fmtNum(r[secondaryKey])}</td>`;
+       tbody.appendChild(tr);
+     });
+   }
+   const leaders = s.leaders || {};
+   fillLeaderTable("callOiLeaders", leaders.call_oi, "call_oi", "call_volume");
+   fillLeaderTable("putOiLeaders", leaders.put_oi, "put_oi", "put_volume");
+   fillLeaderTable("callVolLeaders", leaders.call_volume, "call_volume", "call_oi");
+   fillLeaderTable("putVolLeaders", leaders.put_volume, "put_volume", "put_oi");
+
+
+   const tbody = document.querySelector("#strikeTable tbody");
+   tbody.innerHTML = "";
+   (s.table || []).forEach(row => {
+     const isSpotRow = s.spot && Math.abs(row.strike - s.spot) < 2.5;
+     const tr = document.createElement("tr");
+     if (isSpotRow) tr.className = "spotrow";
+     tr.innerHTML = `
+       <td>${fmtNum(row.strike)}</td>
+       <td>${fmtNum(row.call_oi)}</td>
+       <td>${fmtNum(row.put_oi)}</td>
+       <td>${fmtB(row.call_gex)}</td>
+       <td>${fmtB(row.put_gex)}</td>
+       <td class="${row.net_gex >= 0 ? 'pos' : 'neg'}">${fmtB(row.net_gex)}</td>
+     `;
+     tbody.appendChild(tr);
+   });
+
+
+   const ev = document.getElementById("events");
+   ev.innerHTML = "";
+   (data.events || []).forEach(e => {
+     const div = document.createElement("div");
+     div.textContent = `[${e.time}] ${e.message}`;
+     ev.appendChild(div);
+   });
+
+
+   const levelBody = document.querySelector("#levelStateTable tbody");
+   levelBody.innerHTML = "";
+   (s.level_states || []).forEach(row => {
+     const tr = document.createElement("tr");
+     const distClass = row.distance >= 0 ? "pos" : "neg";
+     tr.innerHTML = `
+       <td>${row.name}</td>
+       <td>${fmtNum(row.price)}</td>
+       <td class="${distClass}">${row.distance >= 0 ? "+" : ""}${row.distance.toFixed(1)}</td>
+       <td><span class="state-badge state-${row.state}">${row.state}</span></td>
+     `;
+     levelBody.appendChild(tr);
+   });
+
+
+   const commentary = document.getElementById("commentary");
+   commentary.innerHTML = "";
+   (s.commentary || []).forEach(line => {
+     const div = document.createElement("div");
+     div.textContent = line;
+     commentary.appendChild(div);
+   });
+
+
+ } catch (e) {
+   document.getElementById("error").textContent = "Failed to fetch state: " + e;
+ }
+}
+
+
+poll();
+setInterval(poll, POLL_MS);
+</script>
+</body>
+</html>
