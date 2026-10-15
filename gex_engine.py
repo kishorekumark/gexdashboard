@@ -208,6 +208,8 @@ def compute_live_flow(
            "symbol": symbol,
            "strike": num(strike),
            "option_type": option_type,
+           "expiration": opt.get("expiration_date") or opt.get("expiration"),
+           "dte": opt.get("dte"),
            "side": side,
            "contracts": delta_volume,
            "last": num(opt.get("last"), None),

@@ -48,6 +48,7 @@ OPTION_SYMBOL = os.environ.get("OPTION_SYMBOL", "SPX")
 EXPIRATION = os.environ.get("EXPIRATION")
 POLL_SECONDS = max(1, int(os.environ.get("POLL_SECONDS", "30")))
 STRIKE_WINDOW = float(os.environ.get("STRIKE_WINDOW", "40"))
+FLOW_DISPLAY_STRIKES = 20
 # Gamma levels are only searched within this many points of spot so a far
 # out-of-the-money strike cannot become the reference intraday level.
 GAMMA_LEVEL_WINDOW = float(os.environ.get("GAMMA_LEVEL_WINDOW", "50"))
@@ -84,6 +85,36 @@ _last_trade_event_state = {}
 _last_structural_events = set()
 # Keyed by "NAME:price" -> claim/rejection state, persists across polls.
 _level_state_store = {}
+_gex_baseline = None
+
+
+def _build_gex_change(current_table, baseline_table, baseline_time, spot, has_comparison):
+   baseline_by_strike = {float(row["strike"]): row for row in baseline_table}
+   current_by_strike = {float(row["strike"]): row for row in current_table}
+   rows = []
+   for strike in sorted(set(baseline_by_strike) | set(current_by_strike)):
+       if spot is not None and abs(strike - spot) > STRIKE_WINDOW:
+           continue
+       baseline = baseline_by_strike.get(strike, {})
+       current = current_by_strike.get(strike, {})
+       baseline_call = float(baseline.get("call_gex") or 0.0)
+       baseline_put = abs(float(baseline.get("put_gex") or 0.0))
+       current_call = float(current.get("call_gex") or 0.0)
+       current_put = abs(float(current.get("put_gex") or 0.0))
+       rows.append({
+           "strike": strike,
+           "call_change": current_call - baseline_call,
+           "put_change": current_put - baseline_put,
+           "call_current": current_call,
+           "put_current": current_put,
+           "call_baseline": baseline_call,
+           "put_baseline": baseline_put,
+       })
+   return {
+       "baseline_time": baseline_time,
+       "has_comparison": has_comparison,
+       "rows": rows,
+   }
 
 
 class _LiveFlowTracker:
@@ -92,6 +123,8 @@ class _LiveFlowTracker:
    def __init__(self):
        self.previous = {}
        self.events = deque(maxlen=MAX_FLOW_EVENTS)
+       self.cvd_by_strike = {}
+       self.cvd_history = deque(maxlen=240)
        self.initialized = False
 
    def update(self, chain, spot):
@@ -103,15 +136,58 @@ class _LiveFlowTracker:
            self.previous = current
            self.initialized = True
            return {"events": [], "totals": {}, "directional_score": 0.0,
-                   "classification_coverage_pct": 0.0}, []
+                   "classification_coverage_pct": 0.0,
+                   "cvd": {"series": [], "strike_table": []}}, []
 
        flow = compute_live_flow(self.previous, chain)
        self.previous = current
        now = datetime.now().strftime("%H:%M:%S")
        for event in flow["events"]:
+           strike = float(event["strike"])
+           row = self.cvd_by_strike.setdefault(strike, {
+               "strike": strike, "calls_net": 0, "puts_net": 0,
+               "calls_net_dollars": 0.0, "puts_net_dollars": 0.0,
+               "calls_buy": 0, "calls_sell": 0, "puts_buy": 0, "puts_sell": 0,
+           })
+           signed_contracts = event["contracts"] if event["side"] == "BUY" else -event["contracts"] if event["side"] == "SELL" else 0
+           signed_dollars = signed_contracts * float(event.get("last") or 0) * 100
+           if event["option_type"] == "call":
+               row["calls_net"] += signed_contracts
+               row["calls_net_dollars"] += signed_dollars
+               if event["side"] in {"BUY", "SELL"}:
+                   row[f"calls_{event['side'].lower()}"] += event["contracts"]
+           else:
+               row["puts_net"] += signed_contracts
+               row["puts_net_dollars"] += signed_dollars
+               if event["side"] in {"BUY", "SELL"}:
+                   row[f"puts_{event['side'].lower()}"] += event["contracts"]
            self.events.append({**event, "time": now})
+       calls_net = sum(row["calls_net"] for row in self.cvd_by_strike.values())
+       puts_net = sum(row["puts_net"] for row in self.cvd_by_strike.values())
+       calls_dollars = sum(row["calls_net_dollars"] for row in self.cvd_by_strike.values())
+       puts_dollars = sum(row["puts_net_dollars"] for row in self.cvd_by_strike.values())
+       self.cvd_history.append({
+           "time": now, "spot": spot, "calls_net": calls_net, "puts_net": puts_net,
+           "dollars_net": calls_dollars + puts_dollars,
+           "calls_flow_premium": sum(
+               (1 if event["side"] == "BUY" else -1 if event["side"] == "SELL" else 0)
+               * float(event.get("contracts") or 0) * float(event.get("last") or 0) * 100
+               for event in flow["events"] if event["option_type"] == "call"
+           ),
+           "puts_flow_premium": sum(
+               (1 if event["side"] == "BUY" else -1 if event["side"] == "SELL" else 0)
+               * float(event.get("contracts") or 0) * float(event.get("last") or 0) * 100
+               for event in flow["events"] if event["option_type"] == "put"
+           ),
+           "calls_drift": calls_dollars,
+           "puts_drift": puts_dollars,
+       })
        recent = list(self.events)
        flow["events"] = recent
+       flow["cvd"] = {
+           "series": list(self.cvd_history),
+           "strike_table": sorted(self.cvd_by_strike.values(), key=lambda row: row["strike"]),
+       }
        return flow, recent
 
 
@@ -137,6 +213,31 @@ def _trim_by_spot(rows, spot):
        return []
    result = [r for r in rows if _safe_float(r.get("strike")) is not None and abs(float(r["strike"]) - spot) <= STRIKE_WINDOW]
    return sorted(result, key=lambda r: r["strike"])
+
+
+def _nearest_strikes(chain, spot, limit=FLOW_DISPLAY_STRIKES):
+    strikes = {
+         _safe_float(option.get("strike"))
+         for option in chain
+         if _safe_float(option.get("strike")) is not None
+    }
+    return set(sorted(strikes, key=lambda strike: (abs(strike - spot), strike))[:limit])
+
+
+def _filter_live_flow_for_spot(flow, strikes):
+    filtered = dict(flow)
+    filtered["events"] = [
+         event for event in flow.get("events", [])
+         if _safe_float(event.get("strike")) in strikes
+    ]
+    cvd = dict(flow.get("cvd") or {})
+    cvd["strike_table"] = [
+         row for row in cvd.get("strike_table", [])
+         if _safe_float(row.get("strike")) in strikes
+    ]
+    filtered["cvd"] = cvd
+    filtered["display_strikes"] = sorted(strikes)
+    return filtered
 
 
 
@@ -320,6 +421,7 @@ class _PriceFeed:
 
 
 def _poll_loop():
+    global _gex_baseline
     client = TradierClient(token=TRADIER_TOKEN, sandbox=SANDBOX)
     price_feed = _PriceFeed(client, UNDERLYING_SYMBOL)
     flow_tracker = _LiveFlowTracker()
@@ -357,11 +459,25 @@ def _poll_loop():
 
 
            gex = compute_gex(chain, spot, level_window=GAMMA_LEVEL_WINDOW)
+           today = date.today().isoformat()
+           if _gex_baseline is None or _gex_baseline["date"] != today:
+               _gex_baseline = {
+                   "date": today,
+                   "time": now_str,
+                   "table": [dict(row) for row in gex.get("table", [])],
+               }
+           gex_change = _build_gex_change(
+               gex.get("table", []), _gex_baseline["table"],
+               _gex_baseline["time"], spot,
+               has_comparison=_gex_baseline["time"] != now_str,
+           )
            max_pain = compute_max_pain(chain)
            volume_meter = compute_volume_meter(gex)
            dex = compute_dex(chain, spot)
            flow = compute_flow(chain)
            live_flow, flow_events = flow_tracker.update(chain, spot)
+           display_strikes = _nearest_strikes(chain, spot)
+           live_flow = _filter_live_flow_for_spot(live_flow, display_strikes)
            heatmap = build_options_heatmap(
                chain, flow_events, spot, level_window=STRIKE_WINDOW,
            )
@@ -435,6 +551,7 @@ def _poll_loop():
                    "price_bars": _chart_bars(intraday_bars),
                    "max_pain": max_pain,
                    "table": trimmed,
+                   "gex_change": gex_change,
                    "volume_meter": volume_meter,
                    "leaders": leaders,
                    "live_flow": {
@@ -494,6 +611,7 @@ def _poll_loop():
 @app.route("/")
 def index():
    return render_template("index.html", symbol=UNDERLYING_SYMBOL,
+                                             option_symbol=OPTION_SYMBOL,
                                   expiration=_expiration(), poll_seconds=POLL_SECONDS,
                                   trade_major_shift_points=TRADE_MAJOR_SHIFT_POINTS)
 

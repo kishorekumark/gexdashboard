@@ -59,6 +59,85 @@
  .chart-card svg .gamma-level { stroke-width:1.5; }
  .chart-card svg .flip-line { stroke:#b07cff; stroke-width:1.5; stroke-dasharray:6,3; }
  .chart-card svg .level-tag { font-size:10.5px; font-weight:600; }
+ .reference-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0 8px; }
+ .reference-grid .chart-card { margin-bottom:0; }
+ .reference-card-title { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px; }
+ .reference-card-title strong { font-size:15px; }
+ .reference-card-title span { color:#888; font-size:12px; }
+ .gex-change-table { max-height:320px; overflow:auto; }
+ .gex-change-table table { min-width:420px; }
+ .gex-change-table th { position:sticky; top:0; background:#161b22; }
+ .max-pain-card { display:flex; flex-direction:column; justify-content:center; min-height:160px; }
+ .max-pain-value { font-size:32px; font-weight:700; color:#f0c75e; margin:8px 0; }
+ .max-pain-note { color:#888; font-size:12px; line-height:1.5; }
+ .flow-level-card { background:#101a20; border:1px solid #263943; border-radius:8px; overflow:hidden; margin:18px 0 8px; }
+ .flow-level-head { padding:14px 16px; border-bottom:1px solid #263943; }
+ .flow-level-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+ .flow-level-title { color:#f0c75e; font-size:12px; font-weight:700; letter-spacing:.06em; }
+ .flow-level-note { color:#71838a; font-size:12px; margin-top:6px; }
+ .flow-size-filter { display:flex; align-items:center; gap:8px; color:#9caeb3; font-size:12px; }
+ .flow-size-filter input { width:78px; padding:6px 8px; color:#e6e6e6; background:#0b1216; border:1px solid #34464c; border-radius:4px; font:inherit; }
+ .flow-level-summary { display:flex; justify-content:space-between; gap:16px; padding:12px 16px; color:#9caeb3; font-size:12px; }
+ .flow-level-summary strong { color:#f0c75e; }
+ .flow-table { width:100%; border-collapse:collapse; min-width:820px; }
+ .flow-table-wrap { overflow-x:auto; }
+ .flow-table th { background:#172632; color:#71838a; font-size:10px; letter-spacing:.08em; text-transform:uppercase; padding:9px 10px; }
+ .flow-table td { border-bottom:1px solid #1d2930; padding:9px 10px; color:#9caeb3; white-space:nowrap; }
+ .flow-table .flow-call { color:#45c892; font-weight:700; }
+ .flow-table .flow-put { color:#ed6a60; font-weight:700; }
+ .flow-table .flow-buy { color:#45c892; }
+ .flow-table .flow-sell { color:#ed6a60; }
+ .flow-table .flow-unknown { color:#8a9aa0; }
+ .flow-table .premium { color:#edf3f4; font-weight:700; text-align:right; }
+ .flow-empty { color:#71838a; padding:18px 16px; font-size:13px; }
+ .cvd-card { background:#101a20; border:1px solid #263943; border-radius:8px; overflow:hidden; margin:18px 0 8px; }
+ .cvd-head { padding:14px 16px; border-bottom:1px solid #263943; }
+ .cvd-title { color:#dfe9e9; font-size:13px; font-weight:700; letter-spacing:.08em; }
+ .cvd-note { color:#71838a; font-size:12px; margin-top:6px; line-height:1.45; }
+ .cvd-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#263943; }
+ .cvd-metric { background:#101a20; padding:12px 14px; }
+ .cvd-metric label { color:#71838a; display:block; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+ .cvd-metric strong { display:block; margin-top:5px; font-size:17px; }
+ .cvd-chart { padding:10px 14px 0; }
+ .cvd-chart svg text { fill:#71838a; font-size:10px; font-family:inherit; }
+ .cvd-chart svg .cvd-gridline { stroke:#24343b; stroke-width:1; }
+ .cvd-chart svg .cvd-zero { stroke:#66777c; stroke-width:1; }
+ .strike-flow { padding:14px 14px 6px; overflow-x:auto; }
+ .strike-flow svg { display:block; min-width:320px; }
+ .strike-flow svg text { fill:#71838a; font-size:10px; font-family:inherit; }
+ .strike-flow svg .strike-zero { stroke:#66777c; stroke-width:1; }
+ .strike-flow svg .strike-bearish { fill:#ed6a60; }
+ .strike-flow svg .strike-bullish { fill:#45c892; }
+ .strike-flow svg .strike-spot { fill:rgba(74,158,255,.08); stroke:#4a9eff; stroke-width:1; }
+ .strike-flow-note { color:#71838a; padding:0 14px 10px; font-size:11px; }
+ .cvd-table { width:100%; border-collapse:collapse; min-width:980px; }
+ .cvd-table th { background:#172632; color:#71838a; font-size:10px; text-transform:uppercase; letter-spacing:.08em; padding:9px 10px; }
+ .cvd-table td { border-bottom:1px solid #1d2930; padding:8px 10px; color:#a4b3b6; text-align:right; }
+ .cvd-table td:first-child, .cvd-table th:first-child { text-align:left; }
+ .cvd-table .cvd-buy { color:#45c892; }
+ .cvd-table .cvd-sell { color:#ed6a60; }
+ .flow-analytics { background:#101a20; border:1px solid #263943; border-radius:8px; overflow:hidden; margin:18px 0 8px; }
+ .flow-analytics-head { padding:14px 16px; border-bottom:1px solid #263943; }
+ .flow-analytics-title { color:#dfe9e9; font-size:13px; font-weight:700; }
+ .flow-analytics-note { color:#71838a; font-size:12px; line-height:1.45; margin-top:6px; }
+ .flow-analytics-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; padding:12px 16px; }
+ .flow-analytics-panel { min-width:0; border-top:1px solid #263943; padding-top:10px; }
+ .flow-analytics-panel h4 { color:#9caeb3; font-size:11px; font-weight:600; margin:0 0 8px; text-transform:uppercase; }
+ .premium-chart { min-height:220px; overflow-x:auto; }
+ .premium-chart svg { display:block; }
+ .premium-chart svg text { fill:#71838a; font-size:10px; font-family:inherit; }
+ .premium-chart svg .premium-grid { stroke:#24343b; stroke-width:1; }
+ .premium-chart svg .premium-zero { stroke:#66777c; stroke-width:1; }
+ .premium-chart svg .premium-calls { fill:none; stroke:#45c892; stroke-width:2; }
+ .premium-chart svg .premium-puts { fill:none; stroke:#ed6a60; stroke-width:2; }
+ .premium-heatmap { overflow-x:auto; }
+ .premium-heatmap table { min-width:420px; font-size:12px; }
+ .premium-heatmap th { background:#172632; color:#71838a; font-size:10px; padding:8px; text-transform:uppercase; }
+ .premium-heatmap td { border-bottom:1px solid #1d2930; padding:7px 8px; text-align:right; white-space:nowrap; }
+ .premium-heatmap td:first-child, .premium-heatmap th:first-child { text-align:left; }
+ @media (max-width:720px) { .flow-analytics-grid { grid-template-columns:1fr; gap:8px; } }
+ @media (max-width:720px) { .cvd-metrics { grid-template-columns:1fr 1fr; } }
+ @media (max-width: 720px) { .reference-grid { grid-template-columns:1fr; } }
  .level-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
  .level-col h4 { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.04em; margin:0 0 8px; font-weight:500; }
  .level-col table { font-size:12px; }
@@ -85,6 +164,59 @@
 
 
  <div class="cards" id="cards"></div>
+
+ <div class="flow-level-card">
+   <div class="flow-level-head">
+    <div class="flow-level-heading">
+     <div class="flow-level-title">LIVE FLOW FILTER · {{ option_symbol }} · 20 NEAREST STRIKES</div>
+     <label class="flow-size-filter" for="flowMinSize">Size greater than
+       <input id="flowMinSize" type="number" min="0" step="1" value="100" aria-label="Minimum live-flow contract size">
+     </label>
+    </div>
+    <div class="flow-level-note">Newly observed option volume from the 20 strikes nearest spot. Only prints larger than the selected contract size are shown.</div>
+   </div>
+   <div class="flow-level-summary" id="flowLevelSummary"><strong>GAMMA FLIP -</strong><span>Waiting for live option prints...</span></div>
+   <div class="flow-table-wrap">
+     <table class="flow-table">
+       <thead><tr><th>Time</th><th>Type</th><th>Ticker</th><th>Strike</th><th>Exp</th><th>DTE</th><th>Price</th><th>Size</th><th>Premium</th><th>Side</th></tr></thead>
+       <tbody id="flowLevelRows"></tbody>
+     </table>
+   </div>
+ </div>
+
+ <div class="cvd-card">
+   <div class="cvd-head">
+    <div class="cvd-title">OPTIONS CVD · {{ option_symbol }}</div>
+    <div class="cvd-note">Strike metrics and rows cover the 20 strikes nearest spot. Cumulative classified volume is buy-side contracts minus sell-side contracts; prints inside the spread are excluded, and this cannot identify opening versus closing trades.</div>
+   </div>
+   <div class="cvd-metrics">
+     <div class="cvd-metric"><label>Calls net</label><strong id="cvdCallsNet">-</strong></div>
+     <div class="cvd-metric"><label>Puts net</label><strong id="cvdPutsNet">-</strong></div>
+     <div class="cvd-metric"><label>Calls net $</label><strong id="cvdCallsDollars">-</strong></div>
+     <div class="cvd-metric"><label>Puts net $</label><strong id="cvdPutsDollars">-</strong></div>
+   </div>
+   <div class="cvd-chart" id="cvdChart"></div>
+  <div class="strike-flow" id="strikeFlowChart" role="img" aria-label="Estimated bullish and bearish option flow by strike"></div>
+  <div class="strike-flow-note">Bullish = calls bought + puts sold; bearish = calls sold + puts bought. Outline marks the strike nearest spot. Aggressor-side classification is an estimate.</div>
+   <div class="flow-table-wrap">
+    <table class="cvd-table"><thead><tr><th>Strike</th><th>Calls bought</th><th>Calls sold</th><th>Calls net</th><th>Puts bought</th><th>Puts sold</th><th>Puts net</th><th>Net</th><th>$ net</th></tr></thead><tbody id="cvdStrikeRows"></tbody></table>
+   </div>
+ </div>
+
+ <section class="flow-analytics">
+   <div class="flow-analytics-head">
+     <div class="flow-analytics-title">ESTIMATED PREMIUM FLOW · {{ option_symbol }}</div>
+     <div class="flow-analytics-note">Estimated from volume changes between Tradier snapshots × last option price × 100, with buy/sell inferred from bid/ask. Flow charts are per poll and cumulative since startup; strike maps show the 20 nearest strikes for configured expiration {{ expiration }} only. This is not a trade tape.</div>
+   </div>
+   <div class="flow-analytics-grid">
+     <section class="flow-analytics-panel"><h4>Net Flow Premium · Per Poll</h4><div class="premium-chart" id="premiumFlowChart"></div></section>
+     <section class="flow-analytics-panel"><h4>Net Drift Premium · Cumulative</h4><div class="premium-chart" id="premiumDriftChart"></div></section>
+   </div>
+   <div class="flow-analytics-grid">
+     <section class="flow-analytics-panel"><h4>Net Premium Heat Map · {{ expiration }}</h4><div class="premium-heatmap" id="premiumHeatmap"></div></section>
+     <section class="flow-analytics-panel"><h4>Net Volume Heat Map · {{ expiration }}</h4><div class="premium-heatmap" id="volumeHeatmap"></div></section>
+   </div>
+ </section>
 
  <h3>Trade Idea</h3>
  <div id="tradeIdea" class="card"></div>
@@ -155,42 +287,29 @@
  </div>
 
 
- <h3>Gamma Exposure — Per Strike</h3>
- <div class="chart-card">
-   <div id="gammaChart"></div>
+ <h3>Gamma Details Overview</h3>
+ <div class="reference-grid">
+   <div class="chart-card"><div class="reference-card-title"><strong>Absolute Gamma</strong><span>Magnitude by strike</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="absoluteGammaTile"></div></div>
+   <div class="chart-card"><div class="reference-card-title"><strong>Net Gamma</strong><span>Signed dealer exposure</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Positive</span><span><span class="dot" style="background:#e05252;"></span>Negative</span></div><div id="netGammaTile"></div></div>
+   <div class="chart-card"><div class="reference-card-title"><strong>Open Interest</strong><span>Calls vs puts</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="openInterestTile"></div></div>
+   <div class="chart-card"><div class="reference-card-title"><strong>Daily Volume</strong><span>Current chain volume</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="dailyVolumeTile"></div></div>
+  <div class="chart-card"><div class="reference-card-title"><strong>Live Call / Put Flow</strong><span>Buy above zero · sell below · by strike</span></div><div class="chart-legend"><span><span class="dot" style="background:#45c892;"></span>Calls bought</span><span><span class="dot" style="background:#168b65;"></span>Calls sold</span><span><span class="dot" style="background:#ed6a60;"></span>Puts bought</span><span><span class="dot" style="background:#a43f48;"></span>Puts sold</span></div><div id="callPutMovementTile"></div></div>
+   <div class="chart-card max-pain-card"><div class="reference-card-title"><strong>Max Pain</strong><span>Expiration pin estimate</span></div><div id="maxPainTile" class="max-pain-value">-</div><div class="max-pain-note">Theoretical expiration level where aggregate option payout is minimized. It is context, not an intraday price target.</div></div>
  </div>
 
-
- <h3>Dealer Supply &amp; Demand — Per Strike</h3>
- <div class="chart-card">
-   <div class="chart-legend">
-     <span><span class="dot" style="background:#4caf50;"></span>Supply: positive call GEX</span>
-     <span><span class="dot" style="background:#e05252;"></span>Demand: negative put GEX</span>
+   <h3>Intraday GEX Change by Strike</h3>
+   <div class="note" id="gexChangeStatus">Waiting for the first GEX snapshot of the day.</div>
+   <div class="chart-card">
+     <div class="chart-legend">
+       <span><span class="dot" style="background:#4caf50;"></span>Call exposure change</span>
+       <span><span class="dot" style="background:#e05252;"></span>Put exposure change</span>
+     </div>
+     <div id="gexChangeChart"></div>
    </div>
-   <div class="chart-note">Estimated positioning pressure, not observed dealer orders. Spot is marked in blue.</div>
-   <div id="dealerSupplyDemandChart"></div>
- </div>
-
-
- <h3>Delta Exposure — Per Strike</h3>
- <div class="chart-card">
-   <div class="chart-legend">
-     <span><span class="dot" style="background:#4caf50;"></span>Net positive (call-tilted)</span>
-     <span><span class="dot" style="background:#e05252;"></span>Net negative (put-tilted)</span>
+   <div class="gex-change-table">
+     <table><thead><tr><th>Strike</th><th>Call GEX change</th><th>Put GEX change</th></tr></thead>
+       <tbody id="gexChangeRows"></tbody></table>
    </div>
-   <div id="deltaChart"></div>
- </div>
-
-
- <h3>Vega Exposure — Per Strike</h3>
- <div class="chart-card">
-   <div class="chart-legend">
-     <span><span class="dot" style="background:#4caf50;"></span>Call vega</span>
-     <span><span class="dot" style="background:#e05252;"></span>Put vega</span>
-   </div>
-   <div id="vegaChart"></div>
- </div>
-
 
  <h3>Call vs Put Volume (today)</h3>
  <div class="meter-wrap">
@@ -272,6 +391,428 @@ function niceStep(maxAbs) {
    if (maxAbs / s <= 4) return s;
  }
  return steps[steps.length - 1];
+}
+
+
+function renderReferenceStrikeChart(containerId, table, mode, spot) {
+ const el = document.getElementById(containerId);
+ if (!table || table.length === 0) {
+   el.innerHTML = '<div class="chart-empty">Waiting for chain data...</div>';
+   return;
+ }
+ const width = Math.max(el.clientWidth || 620, 300);
+ const height = 250;
+ const mL = 48, mR = 16, mT = 16, mB = 48;
+ const plotW = width - mL - mR;
+ const plotH = height - mT - mB;
+ const rows = table.filter(row => Number.isFinite(Number(row.strike)));
+ const band = plotW / rows.length;
+ const barW = Math.max(2, band * 0.7);
+ const values = rows.map(row => {
+   if (mode === 'absGamma') return [Math.abs(Number(row.call_gex || 0)), Math.abs(Number(row.put_gex || 0))];
+   if (mode === 'netGamma') return [Number(row.net_gex || 0)];
+   if (mode === 'oi') return [Number(row.call_oi || 0), Number(row.put_oi || 0)];
+  if (mode === 'movement') return [Number(row.calls_buy || 0), -Number(row.calls_sell || 0), Number(row.puts_buy || 0), -Number(row.puts_sell || 0)];
+   return [Number(row.call_volume || 0), Number(row.put_volume || 0)];
+ });
+ const stacked = mode !== 'netGamma' && mode !== 'movement';
+ const rawMax = stacked
+   ? Math.max(...values.map(pair => pair.reduce((sum, value) => sum + Math.max(0, value), 0)), 1)
+   : Math.max(...values.flat().map(value => Math.abs(value)), 1);
+ const step = mode === 'absGamma' || mode === 'netGamma' ? niceStep(rawMax) : Math.max(1, Math.pow(10, Math.floor(Math.log10(rawMax))) * (rawMax / Math.pow(10, Math.floor(Math.log10(rawMax))) <= 2 ? 0.5 : 1));
+ const axisMax = stacked ? step * Math.ceil(rawMax * 1.15 / step) : step * Math.ceil(rawMax * 1.15 / step);
+ const zeroY = stacked ? mT + plotH : mT + plotH / 2;
+ const y = value => stacked
+   ? mT + plotH - (value / axisMax) * plotH
+   : zeroY - (value / axisMax) * (plotH / 2);
+ const minStrike = Number(rows[0].strike);
+ const maxStrike = Number(rows[rows.length - 1].strike);
+ const xCenter = index => mode === 'movement' && maxStrike > minStrike
+   ? mL + ((Number(rows[index].strike) - minStrike) / (maxStrike - minStrike)) * plotW
+   : mL + index * band + band / 2;
+ const colors = ['#4caf50', '#e05252'];
+ let svg = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`;
+ const gridValues = stacked ? [0, axisMax / 4, axisMax / 2, axisMax * 0.75, axisMax] : [-axisMax, -axisMax / 2, 0, axisMax / 2, axisMax];
+ gridValues.forEach(value => {
+   const py = y(value);
+   svg += `<line class="axis-line" x1="${mL}" y1="${py}" x2="${width - mR}" y2="${py}"/>`;
+   svg += `<text x="${mL - 7}" y="${py + 4}" text-anchor="end">${mode === 'absGamma' || mode === 'netGamma' ? fmtGexAxis(value) : Math.round(value).toLocaleString()}</text>`;
+ });
+ if (!stacked) svg += `<line class="zero-line" x1="${mL}" y1="${zeroY}" x2="${width - mR}" y2="${zeroY}"/>`;
+ rows.forEach((row, index) => {
+   const cx = xCenter(index);
+   const pair = values[index];
+   if (stacked) {
+     let accumulated = 0;
+     pair.forEach((value, seriesIndex) => {
+       const amount = Math.max(0, value);
+       const top = y(accumulated + amount);
+       const bottom = y(accumulated);
+       if (amount > 0) svg += `<rect x="${cx - barW / 2}" y="${top}" width="${barW}" height="${Math.max(1, bottom - top)}" fill="${colors[seriesIndex]}" opacity=".82"/>`;
+       accumulated += amount;
+     });
+   } else if (mode === 'movement') {
+     return;
+   } else if (pair[0] !== 0) {
+     const py = y(pair[0]);
+     svg += `<rect x="${cx - barW / 2}" y="${Math.min(py, zeroY)}" width="${barW}" height="${Math.max(1, Math.abs(zeroY - py))}" fill="${pair[0] >= 0 ? colors[0] : colors[1]}" opacity=".82"/>`;
+   }
+ });
+ if (mode === 'movement') {
+   const traces = [
+     { index: 0, color: '#45c892' },
+     { index: 1, color: '#168b65' },
+     { index: 2, color: '#ed6a60' },
+     { index: 3, color: '#a43f48' },
+   ];
+   traces.forEach(trace => {
+     const points = rows.map((row, index) => `${xCenter(index)},${y(values[index][trace.index])}`).join(' ');
+     svg += `<polyline fill="none" stroke="${trace.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${points}"/>`;
+     rows.forEach((row, index) => {
+       const value = values[index][trace.index];
+       if (!value) return;
+       svg += `<circle cx="${xCenter(index)}" cy="${y(value)}" r="2.5" fill="${trace.color}"/>`;
+     });
+   });
+ }
+ const labelEvery = Math.max(1, Math.ceil(rows.length / 14));
+ rows.forEach((row, index) => {
+   if (index % labelEvery !== 0) return;
+   const cx = xCenter(index);
+   svg += `<text x="${cx}" y="${height - mB + 17}" text-anchor="end" transform="rotate(-45 ${cx} ${height - mB + 17})">${row.strike}</text>`;
+ });
+ if (spot !== null && spot !== undefined && rows.length > 1) {
+   let nearest = 0;
+   rows.forEach((row, index) => { if (Math.abs(row.strike - spot) < Math.abs(rows[nearest].strike - spot)) nearest = index; });
+   const sx = xCenter(nearest);
+   svg += `<line class="spot-line" x1="${sx}" y1="${mT}" x2="${sx}" y2="${height - mB}"/>`;
+   svg += `<text class="spot-label" x="${sx + 4}" y="${mT + 12}" text-anchor="start">spot ${Number(spot).toFixed(0)}</text>`;
+ }
+ svg += `</svg>`;
+ el.innerHTML = svg;
+}
+
+
+function renderGexChange(data, spot) {
+ const status = document.getElementById('gexChangeStatus');
+ const chart = document.getElementById('gexChangeChart');
+ const body = document.getElementById('gexChangeRows');
+ const rows = (data?.rows || []).slice().sort((a, b) => Number(a.strike) - Number(b.strike));
+ if (!data?.has_comparison) {
+   status.textContent = data?.baseline_time
+     ? `Baseline set at ${data.baseline_time}. Changes appear after the next chain poll.`
+     : 'Waiting for the first GEX snapshot of the day.';
+   chart.innerHTML = '<div class="chart-empty">Waiting for the next snapshot to calculate changes.</div>';
+   body.innerHTML = '<tr><td colspan="3" class="chart-empty">No comparison yet.</td></tr>';
+   return;
+ }
+ status.textContent = `Change from first snapshot at ${data.baseline_time}. Positive means exposure magnitude increased; negative means it decreased. Puts use absolute GEX magnitude. Baseline resets each calendar day and when the server restarts.`;
+ if (!rows.length) {
+   chart.innerHTML = '<div class="chart-empty">No strikes in the current spot window.</div>';
+   body.innerHTML = '<tr><td colspan="3" class="chart-empty">No strikes to compare.</td></tr>';
+   return;
+ }
+
+ const width = Math.max(chart.clientWidth || 900, 320), height = 300;
+ const mL = 58, mR = 18, mT = 18, mB = 46;
+ const plotW = width - mL - mR, plotH = height - mT - mB;
+ const maxAbs = Math.max(...rows.flatMap(row => [Math.abs(row.call_change), Math.abs(row.put_change)]), 1);
+ const step = niceStep(maxAbs);
+ const axisMax = step * Math.ceil(maxAbs * 1.15 / step);
+ const zeroY = mT + plotH / 2;
+ const y = value => zeroY - (value / axisMax) * (plotH / 2);
+ const x = index => mL + (rows.length <= 1 ? plotW / 2 : index / (rows.length - 1) * plotW);
+ const barW = Math.max(2, Math.min(12, plotW / rows.length * 0.34));
+ let svg = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`;
+ for (let value = -axisMax; value <= axisMax + 1; value += step) {
+   const py = y(value);
+   svg += `<line class="axis-line" x1="${mL}" y1="${py}" x2="${width - mR}" y2="${py}"/><text x="${mL - 7}" y="${py + 4}" text-anchor="end">${fmtGexAxis(value)}</text>`;
+ }
+ svg += `<line class="zero-line" x1="${mL}" y1="${zeroY}" x2="${width - mR}" y2="${zeroY}"/>`;
+ rows.forEach((row, index) => {
+   const center = x(index);
+   [[row.call_change, '#4caf50', -barW / 2, 'Call'], [row.put_change, '#e05252', barW / 2, 'Put']].forEach(([value, color, offset, label]) => {
+     const top = Math.min(y(value), zeroY), barHeight = Math.max(1, Math.abs(zeroY - y(value)));
+     const current = label === 'Call' ? row.call_current : row.put_current;
+     const baseline = label === 'Call' ? row.call_baseline : row.put_baseline;
+     svg += `<rect x="${center + offset - barW / 2}" y="${top}" width="${barW}" height="${barHeight}" fill="${color}" opacity=".88"><title>${row.strike} ${label}: ${fmtGexAxis(value)} change; baseline ${fmtGexAxis(baseline)}, current ${fmtGexAxis(current)}</title></rect>`;
+   });
+   const labelEvery = Math.max(1, Math.ceil(rows.length / 20));
+   if (index % labelEvery === 0) svg += `<text x="${center}" y="${height - mB + 16}" text-anchor="middle">${row.strike}</text>`;
+ });
+ if (spot !== null && spot !== undefined) {
+   const nearest = rows.reduce((best, row, index) => Math.abs(row.strike - spot) < Math.abs(rows[best].strike - spot) ? index : best, 0);
+   svg += `<line class="spot-line" x1="${x(nearest)}" y1="${mT}" x2="${x(nearest)}" y2="${height - mB}"/><text class="spot-label" x="${x(nearest) + 3}" y="${mT + 12}">spot ${Number(spot).toFixed(0)}</text>`;
+ }
+ svg += '</svg>';
+ chart.innerHTML = svg;
+
+ const ranked = rows.slice().sort((a, b) => Math.max(Math.abs(b.call_change), Math.abs(b.put_change)) - Math.max(Math.abs(a.call_change), Math.abs(a.put_change)));
+ body.innerHTML = ranked.map(row => `<tr><td>${fmtNum(row.strike)}</td><td class="${row.call_change >= 0 ? 'pos' : 'neg'}">${fmtGexAxis(row.call_change)}</td><td class="${row.put_change >= 0 ? 'pos' : 'neg'}">${fmtGexAxis(row.put_change)}</td></tr>`).join('');
+}
+
+
+let flowRenderState = null;
+
+function renderFlowAtLevel(state) {
+ flowRenderState = state;
+ const flow = state.live_flow || {};
+ const input = document.getElementById('flowMinSize');
+ const rawThreshold = Number(input.value);
+ const minSize = Number.isFinite(rawThreshold) && rawThreshold >= 0 ? rawThreshold : 100;
+ const matchingEvents = (flow.events || []).filter(event => Number(event.contracts || 0) > minSize);
+ const events = matchingEvents.slice(-40).reverse();
+ const contracts = events.reduce((sum, event) => sum + Number(event.contracts || 0), 0);
+ const premium = events.reduce((sum, event) => sum + Number(event.contracts || 0) * Number(event.last || 0) * 100, 0);
+ const calls = events.filter(event => String(event.option_type).toLowerCase() === 'call').length;
+ const askSide = events.filter(event => String(event.side).toUpperCase() === 'BUY')
+   .reduce((sum, event) => sum + Number(event.contracts || 0), 0);
+ const askPct = contracts ? Math.round(askSide / contracts * 100) : 0;
+ const title = '{{ option_symbol }} · 20 NEAREST STRIKES';
+ document.getElementById('flowLevelSummary').innerHTML = `
+   <strong>${title}</strong>
+   <span>$${(premium / 1000000).toFixed(2)}M · ${contracts.toLocaleString()} contracts · ${askPct}% ask-side · ${events.length ? Math.round(calls / events.length * 100) : 0}% calls</span>
+   <span>Size &gt; ${minSize} · ${events.length ? `${events.length} matching prints shown` : 'no matching prints'}</span>
+ `;
+ const body = document.getElementById('flowLevelRows');
+ if (!events.length) {
+   body.innerHTML = '<tr><td colspan="10" class="flow-empty">The first poll establishes the volume baseline. New prints will appear here on the next refresh.</td></tr>';
+   return;
+ }
+ body.innerHTML = events.map(event => {
+   const side = String(event.side || 'UNKNOWN').toUpperCase();
+   const sideClass = side === 'BUY' ? 'flow-buy' : side === 'SELL' ? 'flow-sell' : 'flow-unknown';
+   const type = String(event.option_type || '').toLowerCase();
+   const typeClass = type === 'call' ? 'flow-call' : 'flow-put';
+   const expiry = event.expiration ? String(event.expiration).slice(5) : '-';
+   let dte = event.dte;
+   if (dte === undefined || dte === null) {
+     const expiryDate = event.expiration ? new Date(`${event.expiration}T00:00:00`) : null;
+     dte = expiryDate && !Number.isNaN(expiryDate.getTime()) ? Math.max(0, Math.ceil((expiryDate - new Date()) / 86400000)) : '-';
+   }
+   const last = Number(event.last);
+   const premiumValue = Number.isFinite(last) ? Number(event.contracts || 0) * last * 100 : 0;
+   const pressure = side === 'BUY' ? 'ask' : side === 'SELL' ? 'bid' : 'mid';
+   return `<tr>
+     <td>${event.time || '-'}</td>
+     <td class="${typeClass}">${type === 'call' ? 'C' : 'P'}</td>
+     <td>${event.symbol || '-'}</td>
+     <td>${fmtNum(event.strike)}</td>
+     <td>${expiry}</td>
+     <td>${dte}</td>
+     <td>${event.last == null ? '-' : fmtNum(event.last)}</td>
+     <td>${Number(event.contracts || 0).toLocaleString()}</td>
+     <td class="premium">$${(premiumValue / 1000).toFixed(0)}k</td>
+     <td class="${sideClass}">${pressure}</td>
+   </tr>`;
+ }).join('');
+}
+
+document.getElementById('flowMinSize').addEventListener('input', () => {
+ if (flowRenderState) renderFlowAtLevel(flowRenderState);
+});
+
+function fmtDollars(value) {
+ const amount = Number(value || 0);
+ const abs = Math.abs(amount);
+ const sign = amount >= 0 ? '+' : '-';
+ if (abs >= 1e6) return sign + '$' + (abs / 1e6).toFixed(1) + 'M';
+ if (abs >= 1e3) return sign + '$' + (abs / 1e3).toFixed(0) + 'K';
+ return sign + '$' + abs.toFixed(0);
+}
+
+function renderPremiumHistory(containerId, series, callsKey, putsKey) {
+ const chart = document.getElementById(containerId);
+ if (!series.length) {
+   chart.innerHTML = '<div class="flow-empty">Waiting for the first classified volume increment.</div>';
+   return;
+ }
+
+ const width = Math.max(chart.clientWidth || 560, 320);
+ const height = 220;
+ const left = 58, right = 12, top = 28, bottom = 32;
+ const plotWidth = width - left - right;
+ const plotHeight = height - top - bottom;
+ const values = series.flatMap(item => [Number(item[callsKey] || 0), Number(item[putsKey] || 0)]);
+ let min = Math.min(...values), max = Math.max(...values);
+ if (min === max) { min -= 1; max += 1; }
+ const padding = Math.max((max - min) * 0.1, 1);
+ min -= padding;
+ max += padding;
+ const x = index => left + (series.length <= 1 ? plotWidth / 2 : index / (series.length - 1) * plotWidth);
+ const y = value => top + (max - value) / (max - min) * plotHeight;
+ let svg = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`;
+ for (let index = 0; index <= 4; index += 1) {
+   const value = max - (max - min) * index / 4;
+   const py = y(value);
+   svg += `<line class="premium-grid" x1="${left}" y1="${py}" x2="${width - right}" y2="${py}"/><text x="${left - 6}" y="${py + 4}" text-anchor="end">${fmtDollars(value)}</text>`;
+ }
+ if (min <= 0 && max >= 0) {
+   const zeroY = y(0);
+   svg += `<line class="premium-zero" x1="${left}" y1="${zeroY}" x2="${width - right}" y2="${zeroY}"/>`;
+ }
+ const addLine = (key, cssClass) => {
+   const points = series.map((item, index) => `${x(index)},${y(Number(item[key] || 0))}`).join(' ');
+   svg += `<polyline class="${cssClass}" points="${points}"/>`;
+ };
+ addLine(callsKey, 'premium-calls');
+ addLine(putsKey, 'premium-puts');
+ svg += `<text x="${left}" y="13" fill="#45c892">Calls net</text><text x="${left + 76}" y="13" fill="#ed6a60">Puts net</text>`;
+ const labelEvery = Math.max(1, Math.ceil(series.length / 6));
+ series.forEach((item, index) => {
+   if (index % labelEvery !== 0 && index !== series.length - 1) return;
+   svg += `<text x="${x(index)}" y="${height - 7}" text-anchor="middle">${String(item.time || '').slice(0, 5)}</text>`;
+ });
+ svg += '</svg>';
+ chart.innerHTML = svg;
+}
+
+function renderPremiumHeatmaps(rows) {
+ const render = (containerId, firstKey, secondKey, format, firstLabel, secondLabel) => {
+   const container = document.getElementById(containerId);
+   if (!rows.length) {
+     container.innerHTML = '<div class="flow-empty">Waiting for classified flow by strike.</div>';
+     return;
+   }
+   const maxAbs = Math.max(1, ...rows.flatMap(row => [Math.abs(Number(row[firstKey] || 0)), Math.abs(Number(row[secondKey] || 0))]));
+   const cell = (value, formatter) => {
+     const amount = Number(value || 0);
+     const alpha = 0.08 + 0.26 * Math.abs(amount) / maxAbs;
+     const color = amount >= 0 ? `rgba(69,200,146,${alpha})` : `rgba(237,106,96,${alpha})`;
+     return `<td style="background:${color}">${formatter(amount)}</td>`;
+   };
+   container.innerHTML = `<table><thead><tr><th>Strike</th><th>${firstLabel}</th><th>${secondLabel}</th></tr></thead><tbody>${rows.map(row =>
+     `<tr><td>${fmtNum(row.strike)}</td>${cell(row[firstKey], format)}${cell(row[secondKey], format)}</tr>`
+   ).join('')}</tbody></table>`;
+ };
+ render('premiumHeatmap', 'calls_net_dollars', 'puts_net_dollars', fmtDollars, 'Calls net premium', 'Puts net premium');
+ render('volumeHeatmap', 'calls_net', 'puts_net', value => `${value > 0 ? '+' : ''}${value.toLocaleString()}`, 'Calls net volume', 'Puts net volume');
+}
+
+function renderStrikeFlow(rows, spot) {
+ const chart = document.getElementById('strikeFlowChart');
+ if (!rows.length) {
+   chart.innerHTML = '<div class="flow-empty">Waiting for per-strike flow data.</div>';
+   return;
+ }
+
+ const width = Math.max(chart.clientWidth || 900, 320);
+ const left = 58, right = 62, rowHeight = 22, top = 27;
+ const plotLeft = left, plotRight = width - right;
+ const zeroX = (plotLeft + plotRight) / 2;
+ const maxBarWidth = Math.max((plotRight - plotLeft) / 2 - 5, 1);
+ const values = rows.map(row =>
+   Number(row.calls_buy || 0) + Number(row.puts_sell || 0)
+   - Number(row.calls_sell || 0) - Number(row.puts_buy || 0)
+ );
+ const maxAbs = Math.max(...values.map(Math.abs), 1);
+ const height = top + rows.length * rowHeight + 8;
+ const spotNumber = Number(spot);
+ const spotIndex = Number.isFinite(spotNumber)
+   ? rows.reduce((nearest, row, index) =>
+     Math.abs(Number(row.strike) - spotNumber) < Math.abs(Number(rows[nearest].strike) - spotNumber) ? index : nearest, 0)
+   : -1;
+ let svg = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="presentation">`;
+ svg += `<text x="4" y="15">STRIKE</text><text x="${plotLeft}" y="15">BEARISH</text><text x="${plotRight}" y="15" text-anchor="end">BULLISH</text>`;
+ svg += `<line class="strike-zero" x1="${zeroX}" y1="${top - 4}" x2="${zeroX}" y2="${height - 4}"/>`;
+
+ rows.forEach((row, index) => {
+   const bullish = Number(row.calls_buy || 0) + Number(row.puts_sell || 0);
+   const bearish = Number(row.calls_sell || 0) + Number(row.puts_buy || 0);
+   const net = bullish - bearish;
+   const y = top + index * rowHeight;
+   const barWidth = Math.abs(net) / maxAbs * maxBarWidth;
+   if (index === spotIndex) {
+     svg += `<rect class="strike-spot" x="0.5" y="${y}" width="${width - 1}" height="${rowHeight}" rx="2"/>`;
+   }
+   const barClass = net >= 0 ? 'strike-bullish' : 'strike-bearish';
+   const barX = net >= 0 ? zeroX : zeroX - barWidth;
+   const formattedNet = `${net > 0 ? '+' : ''}${net.toLocaleString()}`;
+   svg += `<text x="4" y="${y + 15}">${fmtNum(row.strike)}</text>`;
+   svg += `<rect class="${barClass}" x="${barX}" y="${y + 4}" width="${Math.max(barWidth, 1)}" height="14" rx="2"><title>${fmtNum(row.strike)}: ${bullish.toLocaleString()} bullish, ${bearish.toLocaleString()} bearish contracts</title></rect>`;
+   svg += `<text x="${width - 4}" y="${y + 15}" text-anchor="end">${formattedNet}</text>`;
+ });
+ svg += '</svg>';
+ chart.innerHTML = svg;
+}
+
+function renderCvd(state) {
+ const cvd = (state.live_flow || {}).cvd || {};
+ const series = cvd.series || [];
+ const rows = cvd.strike_table || [];
+ const callsNet = rows.reduce((sum, row) => sum + Number(row.calls_net || 0), 0);
+ const putsNet = rows.reduce((sum, row) => sum + Number(row.puts_net || 0), 0);
+ const callsDollars = rows.reduce((sum, row) => sum + Number(row.calls_net_dollars || 0), 0);
+ const putsDollars = rows.reduce((sum, row) => sum + Number(row.puts_net_dollars || 0), 0);
+ const setMetric = (id, value) => {
+   const element = document.getElementById(id);
+   element.textContent = value;
+   element.className = value.startsWith('-') ? 'neg' : 'pos';
+ };
+ setMetric('cvdCallsNet', `${callsNet >= 0 ? '+' : ''}${callsNet.toLocaleString()}`);
+ setMetric('cvdPutsNet', `${putsNet >= 0 ? '+' : ''}${putsNet.toLocaleString()}`);
+ setMetric('cvdCallsDollars', fmtDollars(callsDollars));
+ setMetric('cvdPutsDollars', fmtDollars(putsDollars));
+ renderPremiumHistory('premiumFlowChart', series, 'calls_flow_premium', 'puts_flow_premium');
+ renderPremiumHistory('premiumDriftChart', series, 'calls_drift', 'puts_drift');
+ renderPremiumHeatmaps(rows);
+
+ const el = document.getElementById('cvdChart');
+ if (!series.length) {
+   el.innerHTML = '<div class="flow-empty">Waiting for the second poll. The first snapshot establishes the volume baseline.</div>';
+ } else {
+   const width = Math.max(el.clientWidth || 900, 320);
+   const height = 280;
+   const mL = 48, mR = 58, mT = 18, mB = 30;
+   const plotW = width - mL - mR;
+   const plotH = height - mT - mB;
+   const values = series.flatMap(item => [Number(item.calls_net || 0), Number(item.puts_net || 0)]);
+   let min = Math.min(...values), max = Math.max(...values);
+   if (min === max) { min -= 1; max += 1; }
+   const pad = Math.max((max - min) * 0.1, 1);
+   min -= pad; max += pad;
+   const x = index => mL + (series.length <= 1 ? plotW / 2 : index / (series.length - 1) * plotW);
+   const y = value => mT + (max - value) / (max - min) * plotH;
+   let svg = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}">`;
+   for (let index = 0; index <= 4; index += 1) {
+     const value = max - (max - min) * index / 4;
+     const py = y(value);
+     svg += `<line class="cvd-gridline" x1="${mL}" y1="${py}" x2="${width - mR}" y2="${py}"/><text x="${mL - 7}" y="${py + 4}" text-anchor="end">${Math.round(value).toLocaleString()}</text>`;
+   }
+   if (min <= 0 && max >= 0) {
+     const py = y(0);
+     svg += `<line class="cvd-zero" x1="${mL}" y1="${py}" x2="${width - mR}" y2="${py}"/>`;
+   }
+   const addLine = (key, color) => {
+     svg += `<polyline fill="none" stroke="${color}" stroke-width="2" points="${series.map((item, index) => `${x(index)},${y(Number(item[key] || 0))}`).join(' ')}"/>`;
+   };
+   addLine('calls_net', '#45c892');
+   addLine('puts_net', '#ed6a60');
+   const spotMin = Math.min(...series.map(item => Number(item.spot || 0)));
+   const spotMax = Math.max(...series.map(item => Number(item.spot || 0)));
+   if (spotMax > spotMin) {
+     const spotY = value => mT + (spotMax - value) / (spotMax - spotMin) * plotH;
+     svg += `<polyline fill="none" stroke="#a4b3b6" stroke-width="1.5" points="${series.map((item, index) => `${x(index)},${spotY(Number(item.spot || 0))}`).join(' ')}"/>`;
+   }
+   const labelEvery = Math.max(1, Math.ceil(series.length / 7));
+   series.forEach((item, index) => {
+     if (index % labelEvery !== 0 && index !== series.length - 1) return;
+     svg += `<text x="${x(index)}" y="${height - 8}" text-anchor="middle">${String(item.time || '').slice(0, 5)}</text>`;
+   });
+   svg += `<text x="${mL}" y="12" fill="#45c892">Calls net</text><text x="${mL + 78}" y="12" fill="#ed6a60">Puts net</text><text x="${mL + 150}" y="12" fill="#a4b3b6">SPX</text></svg>`;
+   el.innerHTML = svg;
+ }
+ renderStrikeFlow(rows, state.spot);
+ const body = document.getElementById('cvdStrikeRows');
+ body.innerHTML = rows.length ? rows.map(row => {
+   const callsBuy = Number(row.calls_buy || 0);
+   const callsSell = Number(row.calls_sell || 0);
+   const putsBuy = Number(row.puts_buy || 0);
+   const putsSell = Number(row.puts_sell || 0);
+   const net = Number(row.calls_net || 0) + Number(row.puts_net || 0);
+   const dollars = Number(row.calls_net_dollars || 0) + Number(row.puts_net_dollars || 0);
+   return `<tr><td>${fmtNum(row.strike)}</td><td class="cvd-buy">${callsBuy.toLocaleString()}</td><td class="cvd-sell">${callsSell.toLocaleString()}</td><td class="${row.calls_net >= 0 ? 'pos' : 'neg'}">${row.calls_net >= 0 ? '+' : ''}${Number(row.calls_net || 0).toLocaleString()}</td><td class="cvd-buy">${putsBuy.toLocaleString()}</td><td class="cvd-sell">${putsSell.toLocaleString()}</td><td class="${row.puts_net >= 0 ? 'pos' : 'neg'}">${row.puts_net >= 0 ? '+' : ''}${Number(row.puts_net || 0).toLocaleString()}</td><td class="${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</td><td class="${dollars >= 0 ? 'pos' : 'neg'}">${fmtDollars(dollars)}</td></tr>`;
+ }).join('') : '<tr><td colspan="9" class="flow-empty">No classified flow yet.</td></tr>';
 }
 
 
@@ -813,6 +1354,15 @@ async function poll() {
      <div class="card"><div class="label">Total Vega</div><div class="value">${fmtB(totalVega)}</div></div>
      <div class="card"><div class="label">Updated</div><div class="value">${s.updated_at ?? "-"}</div></div>
    `;
+   renderReferenceStrikeChart("absoluteGammaTile", s.table, "absGamma", s.spot);
+   renderReferenceStrikeChart("netGammaTile", s.table, "netGamma", s.spot);
+   renderReferenceStrikeChart("openInterestTile", s.table, "oi", s.spot);
+   renderReferenceStrikeChart("dailyVolumeTile", s.table, "volume", s.spot);
+  renderReferenceStrikeChart("callPutMovementTile", ((s.live_flow || {}).cvd || {}).strike_table || [], "movement", s.spot);
+  renderGexChange(s.gex_change, s.spot);
+   document.getElementById("maxPainTile").textContent = s.max_pain == null ? "-" : fmtNum(s.max_pain);
+  renderFlowAtLevel(s);
+  renderCvd(s);
    const ideaClass = idea.action === "BUY" ? "pos" : "neg";
    document.getElementById("tradeIdea").innerHTML = `
      <div class="label">Conditional SMC + GEX signal</div>
@@ -856,15 +1406,6 @@ async function poll() {
 
 
    renderPriceChart("priceChart", s.price_bars, s.spot, s.price_levels, chartGammaLevels, s.flip_level);
-
-
-   const gammaMarkers = [];
-   if (gl.upper_gamma_wall) gammaMarkers.push({strike: gl.upper_gamma_wall.strike, label: "gamma above", color: "#4caf50"});
-   if (gl.lower_gamma_wall) gammaMarkers.push({strike: gl.lower_gamma_wall.strike, label: "gamma below", color: "#e05252"});
-   renderGammaChart("gammaChart", s.table, gammaMarkers, s.spot);
-  renderDealerSupplyDemandChart("dealerSupplyDemandChart", s.dealer_supply_demand, s.spot);
-   renderDeltaChart("deltaChart", s.dex_table, s.spot);
-   renderVegaChart("vegaChart", s.vex_table, s.spot);
 
 
    function fillGammaLevels(elemId, rows) {
