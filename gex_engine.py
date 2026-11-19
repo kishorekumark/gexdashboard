@@ -1005,7 +1005,15 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
    """Create a conditional BUY/SELL idea from SMC and GEX confluence."""
    spot = num(snapshot.get("spot"))
    gamma_levels = snapshot.get("gamma_levels") or {}
-   smc = snapshot.get("smc") or {}; multi_timeframe = snapshot.get("multi_timeframe") or {}; htf_bias = multi_timeframe.get("htf_bias", "NEUTRAL"); entry_1m = multi_timeframe.get("entry_1m") or {}
+   smc = snapshot.get("smc") or {}
+   multi_timeframe = snapshot.get("multi_timeframe") or {}
+   htf_bias = multi_timeframe.get("htf_bias", "NEUTRAL")
+   timeframes = multi_timeframe.get("timeframes") or {}
+   timeframe_biases = {
+       timeframe: (timeframes.get(timeframe) or {}).get("bias", "NEUTRAL")
+       for timeframe in ("15M", "1H", "4H")
+   }
+   entry_1m = multi_timeframe.get("entry_1m") or {}
    price_levels = snapshot.get("price_levels") or []
    net_gex = num(snapshot.get("net_gex"))
    net_dex = num(snapshot.get("net_dex"))
@@ -1057,41 +1065,43 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
    elif net_dex < 0 or flow_score < 0:
        bearish_score += 1
 
-   bullish_reversal = (
-       smc.get("bos") == "BULLISH"
-       or smc.get("liquidity_sweep") == "BULLISH"
-   )
-   bearish_reversal = (
-       smc.get("bos") == "BEARISH"
-       or smc.get("liquidity_sweep") == "BEARISH"
-   )
-   if htf_bias == "BULLISH":
-       direction = "BUY"
-       reasons.insert(0, "higher-timeframe bullish consensus")
-   elif htf_bias == "BEARISH":
-       direction = "SELL"
-       reasons.insert(0, "higher-timeframe bearish consensus")
-   elif smc.get("bias") == "BEARISH" and not bullish_reversal:
-       direction = "SELL"
-       reasons.insert(0, "SMC bearish veto")
-   elif smc.get("bias") == "BULLISH" and not bearish_reversal:
-       direction = "BUY"
-       reasons.insert(0, "SMC bullish veto")
+   bias_15m = timeframe_biases["15M"]
+   bias_1h = timeframe_biases["1H"]
+   bias_4h = timeframe_biases["4H"]
+   if bias_1h == bias_4h and bias_1h in {"BULLISH", "BEARISH"}:
+       candidate_direction = "BUY" if bias_1h == "BULLISH" else "SELL"
+       entry_bias = "BULLISH" if candidate_direction == "BUY" else "BEARISH"
+       if bias_15m == entry_bias:
+           direction = candidate_direction
+           alignment_reason = "15M/1H/4H aligned"
+       else:
+           direction = "WAIT"
+           alignment_reason = "15M does not confirm 1H/4H"
    else:
-       direction = "BUY" if bullish_score >= bearish_score else "SELL"
-   entry_direction = "BULLISH" if direction == "BUY" else "BEARISH"
+       direction = "WAIT"
+       alignment_reason = "1H and 4H disagree or are neutral"
+   if direction != "WAIT":
+       reasons.insert(0, alignment_reason)
+   entry_direction = {"BUY": "BULLISH", "SELL": "BEARISH"}.get(direction)
    entry_confirmation = (
-       entry_1m.get("bias") == entry_direction
-       or entry_1m.get("bos") == entry_direction
-       or entry_1m.get("liquidity_sweep") == entry_direction
+       entry_direction is not None and (
+           entry_1m.get("bias") == entry_direction
+           or entry_1m.get("bos") == entry_direction
+           or entry_1m.get("liquidity_sweep") == entry_direction
+       )
    )
+   entry_confirmation_pending = direction != "WAIT" and not entry_confirmation
+   if entry_confirmation_pending:
+       direction = "WAIT"
    entry_zone = (
        entry_1m.get("active_fvg")
        or entry_1m.get("order_block")
        or entry_1m.get("rejection_block")
    )
    entry_stddev = entry_1m.get("stddev") or {}
-   if entry_confirmation:
+   if direction == "WAIT":
+       reasons = ["1M entry confirmation pending"] if entry_confirmation_pending else [alignment_reason]
+   elif entry_confirmation:
        reasons.append("1M entry confirmation")
    else:
        reasons.append("1M entry confirmation pending")
@@ -1113,11 +1123,11 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
        if level is not None and level < spot
    )
    external = smc.get("external_liquidity") or {}
-   external_target = (
-       (external.get("buy_side") or {}).get("price")
-       if direction == "BUY"
-       else (external.get("sell_side") or {}).get("price")
-   )
+   external_target = None
+   if direction == "BUY":
+       external_target = (external.get("buy_side") or {}).get("price")
+   elif direction == "SELL":
+       external_target = (external.get("sell_side") or {}).get("price")
    if external_target is not None:
        if direction == "BUY" and external_target > spot:
            above.append(num(external_target))
@@ -1126,8 +1136,10 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
    above = sorted(set(above))
    below = sorted(set(below), reverse=True)
    order_block = smc.get("order_block") or {}
+   tp_levels = []
+   stop = None
+   risk_points = None
    if direction == "BUY":
-       target = next((level for level in above if level > spot), None)
        stop_candidates = [
            x for x in below + [
                num(order_block.get("low"), math.nan),
@@ -1135,8 +1147,9 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
            ] if math.isfinite(x) and x < spot
        ]
        stop = max(stop_candidates) if stop_candidates else spot * 0.995
-   else:
-       target = next((level for level in below if level < spot), None)
+       target_levels = above
+       direction_sign = 1
+   elif direction == "SELL":
        stop_candidates = [
            x for x in above + [
                num(order_block.get("high"), math.nan),
@@ -1144,17 +1157,48 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
            ] if math.isfinite(x) and x > spot
        ]
        stop = min(stop_candidates) if stop_candidates else spot * 1.005
-   if target is None:
-       target = spot + (spot - stop) if direction == "BUY" else spot - (stop - spot)
+       target_levels = below
+       direction_sign = -1
+   if direction != "WAIT":
+       risk_points = abs(spot - stop)
+       target_levels = sorted(set(target_levels), reverse=direction_sign < 0)
+       for multiple in (1, 2, 3):
+           minimum_distance = risk_points * multiple
+           if tp_levels:
+               minimum_distance = max(
+                   minimum_distance,
+                   abs(tp_levels[-1] - spot) + risk_points,
+               )
+           target = next((
+               level for level in target_levels
+               if direction_sign * (level - spot) >= minimum_distance
+           ), None)
+           if target is None:
+               target = spot + direction_sign * minimum_distance
+           tp_levels.append(round(target, 2))
 
    return {
        "action": direction,
        "entry": spot,
-       "target": round(target, 2),
-       "stop_loss": round(stop, 2),
-       "risk_points": round(abs(spot - stop), 2),
-       "reward_points": round(abs(target - spot), 2),
+       "target": tp_levels[0] if tp_levels else None,
+       "tp1": tp_levels[0] if tp_levels else None,
+       "tp2": tp_levels[1] if tp_levels else None,
+       "tp3": tp_levels[2] if tp_levels else None,
+       "stop_loss": round(stop, 2) if stop is not None else None,
+       "risk_points": round(risk_points, 2) if risk_points is not None else None,
+       "reward_points": round(abs(tp_levels[0] - spot), 2) if tp_levels else None,
        "smc_bias": smc.get("bias", "NEUTRAL"),
+    "trend_strength": smc.get("trend_strength", "NEUTRAL"),
+    "trend_strength_score": smc.get("trend_strength_score", 0),
+    "strength_signals": smc.get("strength_signals", []),
+    "weakness_signals": smc.get("weakness_signals", []),
+    "strength_level": smc.get("strength_level"),
+    "strength_condition": smc.get("strength_condition"),
+    "weakness_level": smc.get("weakness_level"),
+    "weakness_condition": smc.get("weakness_condition"),
+    "amd_phase": smc.get("amd_phase", "UNCONFIRMED"),
+    "amd_direction": smc.get("amd_direction"),
+    "amd_evidence": smc.get("amd_evidence"),
        "bos": smc.get("bos"),
        "liquidity_sweep": smc.get("liquidity_sweep"),
     "active_fvg": active_fvg,
@@ -1163,14 +1207,16 @@ def build_trade_idea(snapshot: Dict[str, Any]) -> Dict[str, Any]:
     "external_liquidity": external,
     "liquidity_path": smc.get("liquidity_path"),
     "htf_bias": htf_bias,
+    "timeframe_biases": timeframe_biases,
+    "timeframe_alignment": "ALIGNED" if bias_1h == bias_4h == bias_15m and bias_1h in {"BULLISH", "BEARISH"} else alignment_reason,
     "htf_bullish_count": multi_timeframe.get("htf_bullish_count", 0),
     "htf_bearish_count": multi_timeframe.get("htf_bearish_count", 0),
     "entry_1m_bias": entry_1m.get("bias", "NEUTRAL"),
     "entry_1m_confirmation": "CONFIRMED" if entry_confirmation else "PENDING",
     "entry_1m_zone": entry_zone,
     "entry_1m_stddev": entry_1m.get("stddev", {}),
-       "confidence": min(100, 50 + abs(bullish_score - bearish_score) * 10),
-       "reason": ", ".join(reasons[:4]) or "GEX balance and nearest structural levels",
+    "confidence": min(95, 60 + abs(bullish_score - bearish_score) * 5) if direction != "WAIT" else 0,
+    "reason": ", ".join(reasons[:4]) or alignment_reason,
        "risk_note": "Conditional heuristic; wait for price confirmation and use defined risk.",
    }
 
@@ -2041,6 +2087,8 @@ def generate_market_commentary(
    price_levels,
    spot,
    level_events=None,
+    smc_context=None,
+    multi_timeframe=None,
 ):
    """
    Generate human-readable running commentary using:
@@ -2056,6 +2104,7 @@ def generate_market_commentary(
      - Session levels
      - VWAP
      - Level state events
+    - SMC trend strength and AMD phase
 
 
    This is structural commentary, not a trade recommendation.
@@ -2212,6 +2261,51 @@ def generate_market_commentary(
        comments.append(
            f"Nearest price level below: "
            f"{below['name']} {_fmt_price(below['price'])}."
+       )
+
+
+   # --------------------------------------------------------
+   # SMC TREND / AMD CONTEXT
+   # --------------------------------------------------------
+
+
+   smc = smc_context or {}
+   if smc:
+       bias = smc.get("bias", "NEUTRAL")
+       strength = smc.get("trend_strength", "NEUTRAL")
+       score = smc.get("trend_strength_score", 0)
+       comments.append(f"SMC TREND: {strength} {bias} ({score}/100).")
+
+       weakness_level = smc.get("weakness_level")
+       weakness_condition = smc.get("weakness_condition")
+       if weakness_level is not None and weakness_condition:
+           comments.append(
+               f"Trend weakness / invalidation reference: a close "
+               f"{weakness_condition.lower()} {_fmt_price(weakness_level)}."
+           )
+       weakness_signals = smc.get("weakness_signals") or []
+       if weakness_signals:
+           comments.append("Weakness evidence: " + "; ".join(weakness_signals) + ".")
+
+       phase = smc.get("amd_phase", "UNCONFIRMED")
+       phase_direction = smc.get("amd_direction")
+       phase_label = f" {phase_direction}" if phase_direction else ""
+       phase_evidence = smc.get("amd_evidence")
+       comments.append(
+           f"AMD: {phase}{phase_label}"
+           + (f" — {phase_evidence}." if phase_evidence else ".")
+       )
+
+   timeframe_context = (multi_timeframe or {}).get("timeframes") or {}
+   if timeframe_context:
+       labels = ("15M", "1H", "4H", "DAY", "WEEKLY")
+       bias_text = ", ".join(
+           f"{label} {(timeframe_context.get(label) or {}).get('bias', 'NEUTRAL')}"
+           for label in labels if label in timeframe_context
+       )
+       comments.append(
+           f"Multi-timeframe structure: {bias_text}; aggregate "
+           f"{(multi_timeframe or {}).get('htf_bias', 'NEUTRAL')}."
        )
 
 

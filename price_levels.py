@@ -10,9 +10,11 @@ Sessions that have no bars simply return None instead of being fabricated.
 from __future__ import annotations
 
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+from math import sqrt
 from statistics import mean, pstdev
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 
 # name -> (start_minute_of_day, end_minute_of_day). A start >= end wraps midnight.
@@ -140,12 +142,17 @@ def compute_session_levels(
 
 
 
-def compute_prior_day(daily_bars: Iterable[Dict[str, Any]]) -> Optional[Dict[str, float]]:
+def compute_prior_day(
+    daily_bars: Iterable[Dict[str, Any]],
+    as_of: Optional[date] = None,
+) -> Optional[Dict[str, float]]:
    """Prior completed daily bar (PDH/PDL/PDC)."""
    bars = normalize_bars(daily_bars)
-   if len(bars) < 2:
+   current_date = as_of or datetime.now(ZoneInfo("America/New_York")).date()
+   completed = [bar for bar in bars if bar["time"].date() < current_date]
+   if not completed:
        return None
-   return _range([bars[-2]])
+   return _range([completed[-1]])
 
 
 
@@ -191,6 +198,59 @@ def compute_vwap(bars: Iterable[Dict[str, Any]]) -> Optional[float]:
    return typical / volume
 
 
+def compute_expected_move_calibration(
+   daily_bars: Iterable[Dict[str, Any]],
+   volatility_bars: Iterable[Dict[str, Any]],
+   current_move: Optional[float],
+   as_of: date,
+   lookback: int = 60,
+) -> Dict[str, Any]:
+   """Compare a VIX-implied move with prior matched SPX/VIX sessions."""
+   spx_by_date = {bar["time"].date(): bar for bar in normalize_bars(daily_bars)}
+   vix_by_date = {bar["time"].date(): bar for bar in normalize_bars(volatility_bars)}
+   dates = sorted(day for day in set(spx_by_date) & set(vix_by_date) if day < as_of)
+   observations = []
+
+   for index in range(1, len(dates)):
+       previous_date, session_date = dates[index - 1], dates[index]
+       previous_spx = spx_by_date[previous_date]
+       previous_vix = vix_by_date[previous_date]["close"]
+       session = spx_by_date[session_date]
+       expected_move = previous_spx["close"] * previous_vix / (100 * sqrt(252))
+       if expected_move <= 0:
+           continue
+       observations.append({
+           "move": expected_move,
+           "close_inside": abs(session["close"] - previous_spx["close"]) <= expected_move,
+           "range_inside": (
+               session["high"] <= previous_spx["close"] + expected_move
+               and session["low"] >= previous_spx["close"] - expected_move
+           ),
+       })
+
+   observations = observations[-lookback:]
+   count = len(observations)
+   if not count:
+       return {
+           "count": 0,
+           "lookback": lookback,
+           "percentile": None,
+           "close_inside_pct": None,
+           "range_inside_pct": None,
+       }
+
+   return {
+       "count": count,
+       "lookback": lookback,
+       "percentile": (
+           sum(item["move"] <= current_move for item in observations) * 100 / count
+           if current_move is not None else None
+       ),
+       "close_inside_pct": sum(item["close_inside"] for item in observations) * 100 / count,
+       "range_inside_pct": sum(item["range_inside"] for item in observations) * 100 / count,
+   }
+
+
 def _detect_fvg_zones(recent: List[Dict[str, Any]]) -> Dict[str, Any]:
    fvgs = []
    for index in range(2, len(recent)):
@@ -222,6 +282,137 @@ def _detect_fvg_zones(recent: List[Dict[str, Any]]) -> Dict[str, Any]:
    }
 
 
+def _price_action_context(
+   recent: List[Dict[str, Any]],
+   bias: str,
+   bos: Optional[str],
+   liquidity_sweep: Optional[str],
+   swing_highs: List[Tuple[int, float]],
+   swing_lows: List[Tuple[int, float]],
+) -> Dict[str, Any]:
+   latest = recent[-1] if recent else {}
+   ranges = [max(bar["high"] - bar["low"], 0.0) for bar in recent[-21:]]
+   average_range = mean(ranges[:-1]) if len(ranges) > 1 else 0.0
+   latest_range = ranges[-1] if ranges else 0.0
+   body = abs(latest.get("close", 0.0) - latest.get("open", 0.0))
+   body_ratio = body / latest_range if latest_range else 0.0
+   close_location = (
+       (latest["close"] - latest["low"]) / latest_range
+       if latest_range else 0.5
+   )
+   displacement = latest_range >= average_range * 1.25 and body_ratio >= 0.55
+
+   bullish_progression = (
+       len(swing_highs) >= 2 and len(swing_lows) >= 2
+       and swing_highs[-1][1] > swing_highs[-2][1]
+       and swing_lows[-1][1] > swing_lows[-2][1]
+   )
+   bearish_progression = (
+       len(swing_highs) >= 2 and len(swing_lows) >= 2
+       and swing_highs[-1][1] < swing_highs[-2][1]
+       and swing_lows[-1][1] < swing_lows[-2][1]
+   )
+
+   score = 25
+   strength_signals = []
+   weakness_signals = []
+   if bias == "BULLISH":
+       score += 25
+       strength_signals.append("higher highs and higher lows")
+   elif bias == "BEARISH":
+       score += 25
+       strength_signals.append("lower highs and lower lows")
+   if bullish_progression or bearish_progression:
+       score += 10
+   if bos == bias and bias in {"BULLISH", "BEARISH"}:
+       score += 20
+       strength_signals.append(f"{bias.lower()} break of structure")
+   elif bos:
+       score -= 25
+       weakness_signals.append(f"{bos.lower()} break of structure against trend")
+   if liquidity_sweep == bias and bias in {"BULLISH", "BEARISH"}:
+       score += 10
+       strength_signals.append(f"{bias.lower()} liquidity sweep")
+   elif liquidity_sweep:
+       score -= 15
+       weakness_signals.append(f"{liquidity_sweep.lower()} liquidity sweep against trend")
+   if displacement and bias in {"BULLISH", "BEARISH"}:
+       candle_direction = "BULLISH" if latest["close"] > latest["open"] else "BEARISH"
+       if candle_direction == bias and (
+           (bias == "BULLISH" and close_location >= 0.7)
+           or (bias == "BEARISH" and close_location <= 0.3)
+       ):
+           score += 15
+           strength_signals.append("directional displacement")
+       elif candle_direction != bias:
+           score -= 15
+           weakness_signals.append("strong counter-trend candle")
+
+   last_swing_high = swing_highs[-1][1] if swing_highs else None
+   last_swing_low = swing_lows[-1][1] if swing_lows else None
+   if bias == "BULLISH" and last_swing_low is not None:
+       weakness_level = last_swing_low
+       strength_level = last_swing_high
+       if latest and latest["close"] < weakness_level:
+           score -= 30
+           weakness_signals.append("close below protected swing low")
+   elif bias == "BEARISH" and last_swing_high is not None:
+       weakness_level = last_swing_high
+       strength_level = last_swing_low
+       if latest and latest["close"] > weakness_level:
+           score -= 30
+           weakness_signals.append("close above protected swing high")
+   else:
+       weakness_level = None
+       strength_level = None
+
+   score = max(0, min(100, score))
+   if bias == "NEUTRAL" and not bos:
+       strength = "NEUTRAL"
+   elif score >= 70:
+       strength = "STRONG"
+   elif score >= 45:
+       strength = "DEVELOPING"
+   else:
+       strength = "WEAK"
+
+   recent_range = max((bar["high"] for bar in recent[-8:]), default=0.0) - min(
+       (bar["low"] for bar in recent[-8:]), default=0.0,
+   )
+   compression_ratio = recent_range / (average_range * min(8, len(recent))) if average_range and recent else None
+   if liquidity_sweep:
+       amd_phase = "MANIPULATION"
+       amd_direction = liquidity_sweep
+       amd_evidence = f"{liquidity_sweep.lower()} sweep of a recent swing, then close back through the level"
+   elif bos and displacement:
+       amd_phase = "DISTRIBUTION"
+       amd_direction = bos
+       amd_evidence = f"{bos.lower()} structure break with displacement"
+   elif compression_ratio is not None and compression_ratio <= 0.65 and not bos:
+       amd_phase = "ACCUMULATION"
+       amd_direction = "RANGE"
+       amd_evidence = "compressed recent range without a confirmed structure break"
+   else:
+       amd_phase = "UNCONFIRMED"
+       amd_direction = None
+       amd_evidence = "no clear compression, sweep, or displacement break"
+
+   return {
+       "trend_strength": strength,
+       "trend_strength_score": score,
+       "strength_signals": strength_signals,
+       "weakness_signals": weakness_signals,
+       "strength_level": strength_level,
+    "strength_condition": "ABOVE" if bias == "BULLISH" else "BELOW" if bias == "BEARISH" else None,
+       "weakness_level": weakness_level,
+    "weakness_condition": "BELOW" if bias == "BULLISH" else "ABOVE" if bias == "BEARISH" else None,
+       "amd_phase": amd_phase,
+       "amd_direction": amd_direction,
+       "amd_evidence": amd_evidence,
+       "range_compression_ratio": round(compression_ratio, 3) if compression_ratio is not None else None,
+   }
+
+
 def compute_smc_context(
    bars: Iterable[Dict[str, Any]],
    lookback: int = 80,
@@ -234,11 +425,20 @@ def compute_smc_context(
        "swing_high": None, "swing_low": None, "order_block": None,
        "fvgs": [], "active_fvg": None, "inverse_fvgs": [],
        "internal_liquidity": [], "external_liquidity": {},
-       "liquidity_path": None,
+       "liquidity_path": None, "trend_strength": "NEUTRAL",
+       "trend_strength_score": 25, "strength_signals": [],
+       "weakness_signals": [], "strength_level": None,
+       "weakness_level": None, "amd_phase": "UNCONFIRMED",
+       "amd_direction": None, "amd_evidence": "insufficient structure data",
+       "range_compression_ratio": None,
    }
    gap_context = _detect_fvg_zones(recent)
    if len(recent) < swing_strength * 2 + 3:
-       return {**empty, **gap_context}
+       return {
+           **empty,
+           **gap_context,
+           **_price_action_context(recent, "NEUTRAL", None, None, [], []),
+       }
 
    swing_highs = []
    swing_lows = []
@@ -255,6 +455,7 @@ def compute_smc_context(
        return {
            **empty,
            **gap_context,
+           **_price_action_context(recent, "NEUTRAL", None, None, swing_highs, swing_lows),
            "external_liquidity": {
                "buy_side": {"label": "EXTERNAL_BSL", "price": max(x["high"] for x in recent)},
                "sell_side": {"label": "EXTERNAL_SSL", "price": min(x["low"] for x in recent)},
@@ -312,13 +513,17 @@ def compute_smc_context(
        "sell_side": {"label": "EXTERNAL_SSL", "price": external_low},
    }
    draw = "EXTERNAL_BSL" if bias == "BULLISH" else "EXTERNAL_SSL" if bias == "BEARISH" else None
+   price_action = _price_action_context(
+       recent, bias, bos, liquidity_sweep, swing_highs, swing_lows,
+   )
 
    return {
        "bias": bias, "bos": bos, "liquidity_sweep": liquidity_sweep,
        "swing_high": last_high[1], "swing_low": last_low[1],
     "order_block": order_block, **gap_context,
     "internal_liquidity": internal[-6:],
-       "external_liquidity": external, "liquidity_path": draw,
+    "external_liquidity": external, "liquidity_path": draw,
+    **price_action,
    }
 
 
@@ -393,6 +598,14 @@ def compute_timeframe_context(
        "bias": smc.get("bias", "NEUTRAL"),
        "bos": smc.get("bos"),
        "liquidity_sweep": smc.get("liquidity_sweep"),
+    "trend_strength": smc.get("trend_strength", "NEUTRAL"),
+    "trend_strength_score": smc.get("trend_strength_score", 0),
+    "strength_level": smc.get("strength_level"),
+    "weakness_level": smc.get("weakness_level"),
+    "weakness_signals": smc.get("weakness_signals", []),
+    "amd_phase": smc.get("amd_phase", "UNCONFIRMED"),
+    "amd_direction": smc.get("amd_direction"),
+    "amd_evidence": smc.get("amd_evidence"),
        "order_block": smc.get("order_block"),
        "active_fvg": smc.get("active_fvg"),
        "inverse_fvgs": smc.get("inverse_fvgs", []),

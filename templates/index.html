@@ -64,6 +64,22 @@
  .reference-card-title { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px; }
  .reference-card-title strong { font-size:15px; }
  .reference-card-title span { color:#888; font-size:12px; }
+ .playbook-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:#263943; margin:10px 0 14px; }
+ .playbook-metric { min-width:0; background:#101a20; padding:10px 12px; }
+ .playbook-metric label { display:block; color:#71838a; font-size:10px; text-transform:uppercase; }
+ .playbook-metric strong { display:block; margin-top:5px; font-size:15px; overflow-wrap:anywhere; }
+ .playbook-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:16px; }
+ .playbook-body h4 { margin:4px 0 8px; color:#9caeb3; font-size:11px; text-transform:uppercase; }
+ .playbook-table { width:100%; font-size:12px; }
+ .playbook-table th, .playbook-table td { padding:6px 7px; }
+ .playbook-rule { padding:8px 0; border-top:1px solid #263943; font-size:12px; line-height:1.45; }
+ .playbook-rule strong { display:inline-block; min-width:150px; color:#dfe9e9; }
+ .playbook-confirmed { color:#45c892; font-weight:700; }
+ .playbook-wait { color:#d29922; font-weight:700; }
+ .playbook-checklist, .playbook-footnote { color:#82969c; font-size:11px; line-height:1.5; }
+ .playbook-checklist { margin:12px 0 0; padding-left:18px; }
+ .playbook-footnote { border-top:1px solid #263943; margin-top:10px; padding-top:8px; }
+ @media (max-width:760px) { .playbook-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .playbook-body { grid-template-columns:1fr; gap:8px; } .playbook-rule strong { min-width:0; margin-right:8px; } }
  .gex-change-table { max-height:320px; overflow:auto; }
  .gex-change-table table { min-width:420px; }
  .gex-change-table th { position:sticky; top:0; background:#161b22; }
@@ -135,6 +151,53 @@
  .premium-heatmap th { background:#172632; color:#71838a; font-size:10px; padding:8px; text-transform:uppercase; }
  .premium-heatmap td { border-bottom:1px solid #1d2930; padding:7px 8px; text-align:right; white-space:nowrap; }
  .premium-heatmap td:first-child, .premium-heatmap th:first-child { text-align:left; }
+ .legacy-dashboard, .section-nav { display:none; }
+ .workspace-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(360px,38%); gap:14px; align-items:start; }
+ .dashboard-left { min-width:0; }
+ .dashboard-heading { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:0 0 12px; }
+ .dashboard-heading h2 { font-size:17px; margin:0; }
+ .dashboard-heading span { color:#8296a5; font-size:12px; }
+ .dashboard-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ .dashboard-grid .chart-card { margin:0; min-width:0; padding:13px; }
+ .dashboard-grid .wide-card { grid-column:1 / -1; }
+ .flow-rail { position:sticky; top:12px; min-width:0; max-height:calc(100vh - 24px); overflow:auto; }
+ .flow-rail .flow-level-card { margin:0; }
+ .flow-rail .flow-level-note { display:none; }
+ .flow-rail .flow-level-summary { flex-wrap:wrap; gap:6px 12px; }
+ .flow-rail .flow-table { min-width:0; font-size:11px; }
+ .flow-rail .flow-table th, .flow-rail .flow-table td { padding:7px 5px; }
+ .dashboard-status { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+ .dashboard-status .card { flex:1 1 115px; padding:10px 12px; }
+ .dashboard-status .card .value { font-size:17px; }
+ .directional-note { color:#8296a5; font-size:10px; line-height:1.3; margin-top:5px; }
+ .trade-plan-wait { color:#d29922; }
+ .heatmap-wrap { overflow:auto; max-height:360px; }
+ .exposure-heatmap { min-width:520px; font-size:11px; }
+ .exposure-heatmap th { position:sticky; top:0; background:#161b22; z-index:1; }
+ .exposure-heatmap td { white-space:nowrap; }
+ .stats-card { min-width:0; }
+ .stats-note { color:#8296a5; font-size:11px; line-height:1.4; margin-top:10px; }
+ .stats-row { display:grid; grid-template-columns:72px minmax(0,1fr); align-items:center; gap:8px; margin:13px 0; }
+ .stats-label { color:#c3ced4; font-size:12px; font-weight:600; }
+ .stats-bar { display:flex; min-width:0; height:35px; background:#0b0e14; overflow:hidden; }
+ .stats-bar span { display:flex; align-items:center; min-width:0; padding:0 8px; color:#f4f7f8; font-size:11px; font-weight:700; white-space:nowrap; overflow:hidden; text-shadow:0 1px 2px #000; }
+ .stats-put { justify-content:flex-start; background:#b61920; }
+ .stats-call { justify-content:flex-end; background:#00b62a; }
+ .side-stats-list { display:grid; gap:8px; }
+ .side-stats-list .stats-row { grid-template-columns:78px minmax(0,1fr); margin:4px 0; }
+ @media (max-width:1100px) { .stats-bar span { padding:0 5px; font-size:10px; } }
+ @media (max-width:1100px) { .workspace-layout { grid-template-columns:minmax(0,1fr) minmax(320px,40%); } .flow-rail .flow-table th:nth-child(3), .flow-rail .flow-table td:nth-child(3), .flow-rail .flow-table th:nth-child(5), .flow-rail .flow-table td:nth-child(5), .flow-rail .flow-table th:nth-child(6), .flow-rail .flow-table td:nth-child(6) { display:none; } }
+ @media (max-width:760px) { body { padding:12px; } .workspace-layout { grid-template-columns:1fr; } .flow-rail { position:static; max-height:none; } .dashboard-grid { grid-template-columns:1fr; } .dashboard-grid .wide-card { grid-column:auto; } .flow-rail .flow-table th:nth-child(2), .flow-rail .flow-table td:nth-child(2), .flow-rail .flow-table th:nth-child(7), .flow-rail .flow-table td:nth-child(7) { display:none; } }
+ .dashboard-heading { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:0 0 12px; }
+ .dashboard-heading h2 { font-size:17px; margin:0; }
+ .dashboard-heading span { color:#8296a5; font-size:12px; }
+ .flow-analytics { margin:14px 0 8px; }
+ .flow-analytics-grid:last-child, .cvd-card { display:none; }
+ .exposure-cards { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+ .exposure-cards .card { flex:1 1 150px; }
+ .exposure-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ .exposure-grid .chart-card { margin:0; min-width:0; }
+ @media (max-width:720px) { body { padding:14px; } .exposure-grid { grid-template-columns:1fr; } .flow-level-card { margin-top:10px; } }
  @media (max-width:720px) { .flow-analytics-grid { grid-template-columns:1fr; gap:8px; } }
  @media (max-width:720px) { .cvd-metrics { grid-template-columns:1fr 1fr; } }
  @media (max-width: 720px) { .reference-grid { grid-template-columns:1fr; } }
@@ -144,6 +207,12 @@
  .side-above { color:#4caf50; } .side-below { color:#e05252; }
  @media (max-width: 720px) { .level-grid { grid-template-columns: 1fr; } }
  .note { color:#7d8590; font-size:12px; margin:4px 0 12px; }
+ .section-nav { position:sticky; top:0; z-index:20; display:flex; gap:16px; flex-wrap:wrap; padding:10px 0; margin:0 0 12px; background:rgba(11,14,20,.96); border-bottom:1px solid #262c36; }
+ .section-nav a { color:#9caeb3; font-size:12px; text-decoration:none; }
+ .section-nav a:hover, .section-nav a:focus-visible { color:#f0c75e; }
+ .section-anchor { scroll-margin-top:52px; }
+ .advanced-details { margin:18px 0; border-top:1px solid #262c36; border-bottom:1px solid #262c36; }
+ .advanced-details > summary { padding:14px 2px; color:#c6d0d2; cursor:pointer; font-size:13px; font-weight:600; }
 
 
  .state-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; letter-spacing:.03em; }
@@ -155,27 +224,71 @@
  #commentary { background:#161b22; border:1px solid #262c36; border-radius:8px; padding:12px 16px; font-size:13px; }
  #commentary div { padding:5px 0; border-bottom:1px solid #1e2530; }
  #commentary div:last-child { border-bottom:none; }
+ .dashboard-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+ .dashboard-header h1 { margin:0 0 4px; }
+ .dashboard-header .sub { margin:0; }
+ .export-tools { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+ .export-tools label { display:flex; align-items:center; gap:7px; color:#91a5b3; font-size:12px; }
+ .export-tools input, .export-tools a { min-height:34px; box-sizing:border-box; border:1px solid #23435a; border-radius:5px; background:#061a2b; color:#e6eef3; padding:7px 10px; font:inherit; }
+ .export-tools a { display:inline-flex; align-items:center; text-decoration:none; font-size:12px; font-weight:600; }
+ .export-tools a:hover { background:#0b3554; }
+ @media (max-width:760px) { .dashboard-header { align-items:flex-start; flex-direction:column; } .export-tools { justify-content:flex-start; } }
+ .market-commentary-panel { margin-top:12px; background:#101a20; border:1px solid #34464c; border-radius:7px; }
+ .market-commentary-head { padding:12px 14px; border-bottom:1px solid #263943; color:#e6eef3; font-size:14px; font-weight:600; }
+ #commentary { max-height:460px; overflow:auto; border:0; border-radius:0 0 7px 7px; }
 </style>
 </head>
 <body>
- <h1>{{ symbol }} Gamma Exposure — {{ expiration }}</h1>
- <div class="sub">Polling Tradier every {{ poll_seconds }}s · educational structural monitor, not investment advice.</div>
+ <header class="dashboard-header">
+   <div><h1>{{ symbol }} Gamma Exposure — {{ expiration }}</h1>
+   <div class="sub">Polling Tradier every {{ poll_seconds }}s · educational structural monitor, not investment advice.</div></div>
+   <div class="export-tools" aria-label="Daily CSV exports">
+     <label for="exportDate">Day <input id="exportDate" type="date" value="{{ export_date }}"></label>
+     <a id="gexCsvExport" href="/exports/gex/{{ export_date }}.csv">GEX CSV</a>
+     <a id="flowCsvExport" href="/exports/options_flow/{{ export_date }}.csv">Options Flow CSV</a>
+   </div>
+ </header>
+ <nav class="section-nav" aria-label="Dashboard sections">
+   <a href="#overview">Overview</a><a href="#price">Price &amp; levels</a><a href="#flow">Options flow</a><a href="#gamma">Gamma levels</a><a href="#advanced">Advanced</a>
+ </nav>
  <div id="error" class="err"></div>
 
 
- <div class="cards" id="cards"></div>
+ <main class="workspace-layout">
+ <section class="dashboard-left" aria-label="Exposure dashboard">
+   <div class="dashboard-heading"><h2>{{ symbol }} Exposure</h2><span>Live GEX, DEX, price and options flow</span></div>
+   <div class="stats-note">Dealer-side positions are not included in the Tradier feed. GEX and DEX below are open-interest models; quote-side flow cannot identify opening versus closing trades.</div>
+   <div class="dashboard-status" id="gexDexCards"></div>
+   <div class="dashboard-grid">
+     <div class="chart-card stats-card"><div class="reference-card-title"><strong>Contract Statistics</strong><span>{{ expiration }}</span></div><div id="contractStatisticsChart"></div><div class="stats-note">Estimated premium uses option volume × latest quote × 100. Flow events are observed volume increments, not an exchange trade count.</div></div>
+     <div class="chart-card stats-card"><div class="reference-card-title"><strong>Contract Trade Side Statistics</strong><span>Recent live flow · premium</span></div><div id="contractSideStatisticsChart"></div><div class="stats-note">Side buckets are estimated from each observed change versus bid and ask, over the retained live-event window.</div></div>
+    <div class="chart-card"><div class="reference-card-title"><strong>Estimated Net GEX by Strike</strong><span>OI × gamma model</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="gexDashboardChart"></div><div class="stats-note">Modeled sign convention: calls positive, puts negative. Dealer-side ownership and hedge direction are unknown.</div></div>
+     <div class="chart-card"><div class="reference-card-title"><strong>OI-Weighted Delta Proxy</strong><span>Raw signed option delta</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Positive</span><span><span class="dot" style="background:#e05252;"></span>Negative</span></div><div id="dexDashboardChart"></div><div class="stats-note">Open interest does not show whether customers or dealers are long or short.</div></div>
+    <div class="chart-card wide-card"><div class="reference-card-title"><strong>Price &amp; Dealer Levels</strong><span id="priceSessionOhlc">Today O - · H - · L - · C -</span></div><div id="priceDashboardChart"></div></div>
+    <div class="chart-card wide-card" aria-label="Session trading playbook">
+      <div class="reference-card-title"><strong>Session Playbook</strong><span>Conditional levels · updates with the live chain</span></div>
+      <div id="sessionPlaybook"><div class="chart-empty">Waiting for market data...</div></div>
+    </div>
+     <div class="chart-card"><div class="reference-card-title"><strong>Call / Put Premium Crossing</strong><span>Direction check</span></div><div class="premium-chart" id="premiumCrossChart"></div></div>
+     <div class="chart-card"><div class="reference-card-title"><strong>Net Flow Premium</strong><span>Per poll</span></div><div class="premium-chart" id="flowPremiumHistoryChart"></div></div>
+     <div class="chart-card"><div class="reference-card-title"><strong>Net Drift Premium</strong><span>Cumulative</span></div><div class="premium-chart" id="driftPremiumHistoryChart"></div></div>
+     <div class="chart-card wide-card"><div class="reference-card-title"><strong>Options Heat Map</strong><span>Strike · GEX · live flow</span></div><div class="heatmap-wrap" id="exposureHeatmapChart"></div></div>
+   </div>
+ </section>
 
+ <aside class="flow-rail" aria-label="Live options flow">
+ <div class="dashboard-heading"><h2>Live Flow</h2><span>{{ option_symbol }}</span></div>
+ <section id="flow">
  <div class="flow-level-card">
    <div class="flow-level-head">
     <div class="flow-level-heading">
-     <div class="flow-level-title">LIVE FLOW FILTER · {{ option_symbol }} · 20 NEAREST STRIKES</div>
-     <label class="flow-size-filter" for="flowMinSize">Size greater than
-       <input id="flowMinSize" type="number" min="0" step="1" value="100" aria-label="Minimum live-flow contract size">
+     <div class="flow-level-title">{{ option_symbol }} · 20 NEAREST STRIKES</div>
+     <label class="flow-size-filter" for="flowMinSize">Min size
+      <input id="flowMinSize" type="number" min="0" step="1" value="100" aria-label="Minimum live-flow contract size">
      </label>
     </div>
-    <div class="flow-level-note">Newly observed option volume from the 20 strikes nearest spot. Only prints larger than the selected contract size are shown.</div>
    </div>
-   <div class="flow-level-summary" id="flowLevelSummary"><strong>GAMMA FLIP -</strong><span>Waiting for live option prints...</span></div>
+   <div class="flow-level-summary" id="flowLevelSummary"><strong>LIVE FLOW</strong><span>Waiting for option prints...</span></div>
    <div class="flow-table-wrap">
      <table class="flow-table">
        <thead><tr><th>Time</th><th>Type</th><th>Ticker</th><th>Strike</th><th>Exp</th><th>DTE</th><th>Price</th><th>Size</th><th>Premium</th><th>Side</th></tr></thead>
@@ -183,7 +296,36 @@
      </table>
    </div>
  </div>
+ </section>
+ <section class="market-commentary-panel" aria-label="Live market commentary">
+   <header class="market-commentary-head">Live Market Commentary</header>
+   <div id="commentary" aria-live="polite"><div>Waiting for the first market snapshot...</div></div>
+ </section>
+ </aside>
+ </main>
 
+ <div class="legacy-dashboard">
+ <div class="section-anchor" id="overview"><div class="cards" id="cards"></div></div>
+
+ <section class="section-anchor" id="price">
+   <h3>Price &amp; Dealer Levels</h3>
+   <div class="chart-card">
+     <div class="chart-legend">
+       <span><span class="dot" style="background:#4caf50;"></span>Call-dominant gamma</span>
+       <span><span class="dot" style="background:#e05252;"></span>Put-dominant gamma</span>
+       <span><span class="dot" style="background:#b07cff;"></span>Gamma flip</span>
+       <span><span class="dot" style="background:#c9a227;"></span>Prior day / week</span>
+       <span><span class="dot" style="background:#4a9eff;"></span>Session levels / VWAP</span>
+     </div>
+     <div id="priceChart"></div>
+   </div>
+ </section>
+
+ <h3>Trade Idea</h3>
+ <div id="tradeIdea" class="card"></div>
+ </div>
+
+ <section class="legacy-dashboard">
  <div class="cvd-card">
    <div class="cvd-head">
     <div class="cvd-title">OPTIONS CVD · {{ option_symbol }}</div>
@@ -217,10 +359,21 @@
      <section class="flow-analytics-panel"><h4>Net Volume Heat Map · {{ expiration }}</h4><div class="premium-heatmap" id="volumeHeatmap"></div></section>
    </div>
  </section>
+ </section>
 
- <h3>Trade Idea</h3>
- <div id="tradeIdea" class="card"></div>
+ <div class="legacy-dashboard">
+ <section class="section-anchor" id="gamma">
+ <h3>Gamma Levels Relative to Spot</h3>
+ <div class="level-grid">
+   <div class="level-col"><h4>Gamma above spot</h4><table><thead><tr><th>Strike</th><th>Side</th><th>Net GEX</th><th>Dist</th></tr></thead><tbody id="gammaAbove"></tbody></table></div>
+   <div class="level-col"><h4>Gamma below spot</h4><table><thead><tr><th>Strike</th><th>Side</th><th>Net GEX</th><th>Dist</th></tr></thead><tbody id="gammaBelow"></tbody></table></div>
+   <div class="level-col"><h4>Price levels above spot</h4><table><thead><tr><th>Level</th><th>Price</th><th>Dist</th></tr></thead><tbody id="priceAbove"></tbody></table></div>
+   <div class="level-col"><h4>Price levels below spot</h4><table><thead><tr><th>Level</th><th>Price</th><th>Dist</th></tr></thead><tbody id="priceBelow"></tbody></table></div>
+ </div>
+ </section>
 
+ <details class="advanced-details section-anchor" id="advanced">
+ <summary>Advanced analytics, history &amp; event logs</summary>
  <h3>Trade Idea Timeline</h3>
  <div class="note">A new row is saved only after a direction or SMC/liquidity shift, or a target/stop move of at least {{ trade_major_shift_points }} points.</div>
  <div id="tradeHistory" class="trade-history"></div>
@@ -240,57 +393,10 @@
  </table>
 
 
- <h3>Market Commentary</h3>
- <div id="commentary"></div>
-
-
- <h3>Price &amp; Levels</h3>
- <div class="chart-card">
-   <div class="chart-legend">
-     <span><span class="dot" style="background:#4caf50;"></span>Call-dominant gamma</span>
-     <span><span class="dot" style="background:#e05252;"></span>Put-dominant gamma</span>
-     <span><span class="dot" style="background:#b07cff;"></span>Gamma flip</span>
-     <span><span class="dot" style="background:#c9a227;"></span>Prior day / week</span>
-     <span><span class="dot" style="background:#4a9eff;"></span>Session levels / VWAP</span>
-   </div>
-   <div id="priceChart"></div>
- </div>
-
-
- <h3>Gamma Levels Relative to Spot</h3>
- <div class="note">
-   A call-gamma concentration is not automatically resistance and a put-gamma
-   concentration is not automatically support — what matters is where the
-   gamma sits relative to spot, and where the gamma flip is.
- </div>
- <div class="level-grid">
-   <div class="level-col">
-     <h4>Gamma above spot</h4>
-     <table><thead><tr><th>Strike</th><th>Side</th><th>Net GEX</th><th>Dist</th></tr></thead>
-       <tbody id="gammaAbove"></tbody></table>
-   </div>
-   <div class="level-col">
-     <h4>Gamma below spot</h4>
-     <table><thead><tr><th>Strike</th><th>Side</th><th>Net GEX</th><th>Dist</th></tr></thead>
-       <tbody id="gammaBelow"></tbody></table>
-   </div>
-   <div class="level-col">
-     <h4>Price levels above spot</h4>
-     <table><thead><tr><th>Level</th><th>Price</th><th>Dist</th></tr></thead>
-       <tbody id="priceAbove"></tbody></table>
-   </div>
-   <div class="level-col">
-     <h4>Price levels below spot</h4>
-     <table><thead><tr><th>Level</th><th>Price</th><th>Dist</th></tr></thead>
-       <tbody id="priceBelow"></tbody></table>
-   </div>
- </div>
-
-
  <h3>Gamma Details Overview</h3>
  <div class="reference-grid">
    <div class="chart-card"><div class="reference-card-title"><strong>Absolute Gamma</strong><span>Magnitude by strike</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="absoluteGammaTile"></div></div>
-   <div class="chart-card"><div class="reference-card-title"><strong>Net Gamma</strong><span>Signed dealer exposure</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Positive</span><span><span class="dot" style="background:#e05252;"></span>Negative</span></div><div id="netGammaTile"></div></div>
+  <div class="chart-card"><div class="reference-card-title"><strong>Net Gamma</strong><span>Model-estimated signed exposure</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Positive</span><span><span class="dot" style="background:#e05252;"></span>Negative</span></div><div id="netGammaTile"></div><div class="stats-note">Open-interest convention; dealer positioning is not directly observed.</div></div>
    <div class="chart-card"><div class="reference-card-title"><strong>Open Interest</strong><span>Calls vs puts</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="openInterestTile"></div></div>
    <div class="chart-card"><div class="reference-card-title"><strong>Daily Volume</strong><span>Current chain volume</span></div><div class="chart-legend"><span><span class="dot" style="background:#4caf50;"></span>Calls</span><span><span class="dot" style="background:#e05252;"></span>Puts</span></div><div id="dailyVolumeTile"></div></div>
   <div class="chart-card"><div class="reference-card-title"><strong>Live Call / Put Flow</strong><span>Buy above zero · sell below · by strike</span></div><div class="chart-legend"><span><span class="dot" style="background:#45c892;"></span>Calls bought</span><span><span class="dot" style="background:#168b65;"></span>Calls sold</span><span><span class="dot" style="background:#ed6a60;"></span>Puts bought</span><span><span class="dot" style="background:#a43f48;"></span>Puts sold</span></div><div id="callPutMovementTile"></div></div>
@@ -361,11 +467,11 @@
 
  <h3>Event Log</h3>
  <div id="events"></div>
-
+ </details>
+ </div>
 
 <script>
 const POLL_MS = {{ poll_seconds }} * 1000;
-
 
 function fmtB(n) {
  if (n === null || n === undefined) return "-";
@@ -559,9 +665,15 @@ function renderFlowAtLevel(state) {
  const flow = state.live_flow || {};
  const input = document.getElementById('flowMinSize');
  const rawThreshold = Number(input.value);
- const minSize = Number.isFinite(rawThreshold) && rawThreshold >= 0 ? rawThreshold : 100;
- const matchingEvents = (flow.events || []).filter(event => Number(event.contracts || 0) > minSize);
+ const minSize = Number.isFinite(rawThreshold) && rawThreshold >= 0 ? rawThreshold : 10;
+ const allEvents = flow.events || [];
+ const matchingEvents = allEvents.filter(event => Number(event.contracts || 0) > minSize);
  const events = matchingEvents.slice(-40).reverse();
+ const emptyMessage = allEvents.length
+   ? `${allEvents.length} recent prints are below the minimum size. Lower the filter to show them.`
+   : flow.baseline_ready
+     ? 'No new volume increments since the baseline. Waiting for the next refresh.'
+     : 'The first poll establishes the volume baseline. New prints can appear on the next refresh.';
  const contracts = events.reduce((sum, event) => sum + Number(event.contracts || 0), 0);
  const premium = events.reduce((sum, event) => sum + Number(event.contracts || 0) * Number(event.last || 0) * 100, 0);
  const calls = events.filter(event => String(event.option_type).toLowerCase() === 'call').length;
@@ -572,11 +684,11 @@ function renderFlowAtLevel(state) {
  document.getElementById('flowLevelSummary').innerHTML = `
    <strong>${title}</strong>
    <span>$${(premium / 1000000).toFixed(2)}M · ${contracts.toLocaleString()} contracts · ${askPct}% ask-side · ${events.length ? Math.round(calls / events.length * 100) : 0}% calls</span>
-   <span>Size &gt; ${minSize} · ${events.length ? `${events.length} matching prints shown` : 'no matching prints'}</span>
+  <span>Size &gt; ${minSize} · ${events.length ? `Showing ${events.length} of ${matchingEvents.length} matching prints` : emptyMessage}</span>
  `;
  const body = document.getElementById('flowLevelRows');
  if (!events.length) {
-   body.innerHTML = '<tr><td colspan="10" class="flow-empty">The first poll establishes the volume baseline. New prints will appear here on the next refresh.</td></tr>';
+  body.innerHTML = `<tr><td colspan="10" class="flow-empty">${emptyMessage}</td></tr>`;
    return;
  }
  body.innerHTML = events.map(event => {
@@ -655,8 +767,29 @@ function renderPremiumHistory(containerId, series, callsKey, putsKey) {
    const points = series.map((item, index) => `${x(index)},${y(Number(item[key] || 0))}`).join(' ');
    svg += `<polyline class="${cssClass}" points="${points}"/>`;
  };
+ const addCrossMarkers = () => {
+   for (let i = 1; i < series.length; i += 1) {
+     const prevCall = Number(series[i - 1][callsKey] || 0);
+     const currCall = Number(series[i][callsKey] || 0);
+     const prevPut = Number(series[i - 1][putsKey] || 0);
+     const currPut = Number(series[i][putsKey] || 0);
+     const prevDelta = prevCall - prevPut;
+     const currDelta = currCall - currPut;
+     if (prevDelta === 0 || currDelta === 0 || (prevDelta < 0 && currDelta >= 0) || (prevDelta > 0 && currDelta <= 0)) {
+       const markerX = x(i);
+       const markerY = y((currCall + currPut) / 2);
+       svg += `<circle cx="${markerX}" cy="${markerY}" r="4" fill="#d7dce1" stroke="#0f1724" stroke-width="1.5"/>`;
+     }
+   }
+ };
  addLine(callsKey, 'premium-calls');
  addLine(putsKey, 'premium-puts');
+ if (series.length === 1) {
+   svg += `<circle cx="${x(0)}" cy="${y(Number(series[0][callsKey] || 0))}" r="4" fill="#45c892"/>`;
+   svg += `<circle cx="${x(0)}" cy="${y(Number(series[0][putsKey] || 0))}" r="4" fill="#ed6a60"/>`;
+   svg += `<text x="${width - right}" y="${top + 14}" text-anchor="end">Next poll needed for crossover</text>`;
+ }
+ addCrossMarkers();
  svg += `<text x="${left}" y="13" fill="#45c892">Calls net</text><text x="${left + 76}" y="13" fill="#ed6a60">Puts net</text>`;
  const labelEvery = Math.max(1, Math.ceil(series.length / 6));
  series.forEach((item, index) => {
@@ -813,6 +946,158 @@ function renderCvd(state) {
    const dollars = Number(row.calls_net_dollars || 0) + Number(row.puts_net_dollars || 0);
    return `<tr><td>${fmtNum(row.strike)}</td><td class="cvd-buy">${callsBuy.toLocaleString()}</td><td class="cvd-sell">${callsSell.toLocaleString()}</td><td class="${row.calls_net >= 0 ? 'pos' : 'neg'}">${row.calls_net >= 0 ? '+' : ''}${Number(row.calls_net || 0).toLocaleString()}</td><td class="cvd-buy">${putsBuy.toLocaleString()}</td><td class="cvd-sell">${putsSell.toLocaleString()}</td><td class="${row.puts_net >= 0 ? 'pos' : 'neg'}">${row.puts_net >= 0 ? '+' : ''}${Number(row.puts_net || 0).toLocaleString()}</td><td class="${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</td><td class="${dollars >= 0 ? 'pos' : 'neg'}">${fmtDollars(dollars)}</td></tr>`;
  }).join('') : '<tr><td colspan="9" class="flow-empty">No classified flow yet.</td></tr>';
+}
+
+function renderGexDexDashboard(state) {
+ if (!state) return;
+ const gexClass = Number(state.net_gex || 0) >= 0 ? 'pos' : 'neg';
+ const dexClass = Number(state.net_dex || 0) >= 0 ? 'pos' : 'neg';
+ document.getElementById('gexDexCards').innerHTML = `
+   <div class="card"><div class="label">Spot</div><div class="value">${fmtNum(state.spot)}</div></div>
+   <div class="card"><div class="label">Net GEX</div><div class="value ${gexClass}">${fmtB(state.net_gex)}</div></div>
+   <div class="card"><div class="label">Net DEX</div><div class="value ${dexClass}">${fmtB(state.net_dex)}</div></div>
+   <div class="card"><div class="label">Updated</div><div class="value">${state.updated_at || '-'}</div></div>
+   <div class="card"><div class="label">Directional Pressure</div><div class="value" id="directionalPressure">WAITING</div><div class="directional-note" id="directionalContext"></div></div>
+ `;
+ renderDirectionalPressure(state);
+ renderGammaChart('gexDashboardChart', state.table, [], state.spot);
+ renderDeltaChart('dexDashboardChart', state.dex_table, state.spot);
+ renderContractStatistics(state.contract_statistics || {}, ((state.live_flow || {}).events || []));
+ const series = ((state.live_flow || {}).cvd || {}).series || [];
+ renderPremiumHistory('premiumCrossChart', series, 'calls_flow_premium', 'puts_flow_premium');
+ renderPremiumHistory('flowPremiumHistoryChart', series, 'calls_flow_premium', 'puts_flow_premium');
+ renderPremiumHistory('driftPremiumHistoryChart', series, 'calls_drift', 'puts_drift');
+ renderExposureHeatmap(state.options_heatmap || [], state.spot);
+}
+
+function renderDirectionalPressure(state) {
+ const events = ((state.live_flow || {}).events || []).slice(-100);
+ let bullishContracts = 0;
+ let bearishContracts = 0;
+ let unclassifiedContracts = 0;
+ events.forEach(event => {
+   const contracts = Math.max(0, Number(event.contracts || 0));
+   const side = String(event.side || '').toUpperCase();
+   const type = String(event.option_type || '').toLowerCase();
+   if ((type === 'call' && side === 'BUY') || (type === 'put' && side === 'SELL')) {
+     bullishContracts += contracts;
+   } else if ((type === 'put' && side === 'BUY') || (type === 'call' && side === 'SELL')) {
+     bearishContracts += contracts;
+   } else {
+     unclassifiedContracts += contracts;
+   }
+ });
+
+ const totalDirectional = bullishContracts + bearishContracts;
+ const flowImbalance = totalDirectional
+   ? (bullishContracts - bearishContracts) / totalDirectional
+   : 0;
+ const flowSide = flowImbalance >= 0.15 ? 'BULLISH'
+   : flowImbalance <= -0.15 ? 'BEARISH'
+   : totalDirectional ? 'BALANCED' : 'NO FLOW';
+ const netDex = Number(state.net_dex || 0);
+ const dexSide = netDex > 0 ? 'BULLISH' : netDex < 0 ? 'BEARISH' : 'NEUTRAL';
+ let verdict = 'WAITING';
+ let colorClass = '';
+ if (flowSide === 'BULLISH' || flowSide === 'BEARISH') {
+   verdict = dexSide === flowSide ? `${flowSide} ALIGNED`
+     : dexSide === 'NEUTRAL' ? `${flowSide} FLOW`
+     : 'MIXED';
+   colorClass = verdict.startsWith('BULLISH') ? 'pos' : verdict.startsWith('BEARISH') ? 'neg' : '';
+ } else if (flowSide === 'BALANCED') {
+   verdict = 'BALANCED';
+ } else if (dexSide !== 'NEUTRAL') {
+   verdict = `${dexSide} DEX ONLY`;
+   colorClass = dexSide === 'BULLISH' ? 'pos' : 'neg';
+ }
+
+ const gex = Number(state.net_gex || 0);
+ const gammaRegime = gex > 0 ? 'positive gamma' : gex < 0 ? 'negative gamma' : 'neutral gamma';
+ document.getElementById('directionalPressure').className = `value ${colorClass}`;
+ document.getElementById('directionalPressure').textContent = verdict;
+ document.getElementById('directionalContext').textContent =
+   `Last ${events.length} prints · bull ${bullishContracts.toLocaleString()} / bear ${bearishContracts.toLocaleString()} · ` +
+   `OI-DEX ${fmtB(netDex)} · GEX ${gammaRegime} volatility context · ` +
+   `${unclassifiedContracts.toLocaleString()} unclassified · 15% flow edge threshold`;
+}
+
+function formatStatPremium(value) {
+ const amount = Number(value || 0);
+ const abs = Math.abs(amount);
+ if (abs >= 1e9) return `$${(amount / 1e9).toFixed(2)}B`;
+ if (abs >= 1e6) return `$${(amount / 1e6).toFixed(1)}M`;
+ if (abs >= 1e3) return `$${(amount / 1e3).toFixed(0)}K`;
+ return `$${amount.toFixed(0)}`;
+}
+
+function renderContractStatistics(stats, events) {
+ const contractRows = [
+   { label: 'Premium', key: 'premium', format: formatStatPremium },
+   { label: 'Volume', key: 'volume', format: value => Number(value || 0).toLocaleString() },
+   { label: 'Flow events', key: 'events', format: value => Number(value || 0).toLocaleString() },
+ ];
+ const renderBar = (label, calls, puts, formatter) => {
+   const callValue = Number(calls || 0), putValue = Number(puts || 0);
+   const total = callValue + putValue;
+   const callPct = total ? callValue / total * 100 : 50;
+   const putPct = 100 - callPct;
+   return `<div class="stats-row"><div class="stats-label">${label}</div><div class="stats-bar">
+     <span class="stats-put" style="width:${putPct}%">${formatter(putValue)} (${putPct.toFixed(1)}%)</span>
+     <span class="stats-call" style="width:${callPct}%">${formatter(callValue)} (${callPct.toFixed(1)}%)</span>
+   </div></div>`;
+ };
+ document.getElementById('contractStatisticsChart').innerHTML = contractRows.map(row =>
+   renderBar(row.label, stats.calls?.[row.key], stats.puts?.[row.key], row.format)
+ ).join('');
+
+ const sideBuckets = [
+   { key: 'aboveAsk', label: 'Above Ask' },
+   { key: 'ask', label: 'Ask' },
+   { key: 'mid', label: 'Mid Market' },
+   { key: 'bid', label: 'Bid' },
+   { key: 'belowBid', label: 'Below Bid' },
+ ];
+ const sideTotals = Object.fromEntries(sideBuckets.map(bucket => [bucket.key, { calls: 0, puts: 0 }]));
+ events.forEach(event => {
+   const last = Number(event.last), bid = Number(event.bid), ask = Number(event.ask);
+   let bucket = 'mid';
+   if (Number.isFinite(last) && Number.isFinite(bid) && Number.isFinite(ask) && bid >= 0 && ask >= bid) {
+     const tolerance = Math.max(0.01, (ask - bid) * 0.1);
+     if (last > ask + tolerance) bucket = 'aboveAsk';
+     else if (last >= ask - tolerance) bucket = 'ask';
+     else if (last < bid - tolerance) bucket = 'belowBid';
+     else if (last <= bid + tolerance) bucket = 'bid';
+   }
+   const kind = String(event.option_type || '').toLowerCase() === 'call' ? 'calls' : 'puts';
+   sideTotals[bucket][kind] += Number(event.contracts || 0) * Math.max(0, Number(event.last || 0)) * 100;
+ });
+ document.getElementById('contractSideStatisticsChart').innerHTML = `<div class="side-stats-list">${sideBuckets.map(bucket =>
+   renderBar(bucket.label, sideTotals[bucket.key].calls, sideTotals[bucket.key].puts, formatStatPremium)
+ ).join('')}</div>`;
+}
+
+function renderExposureHeatmap(rows, spot) {
+ const container = document.getElementById('exposureHeatmapChart');
+ if (!rows.length) {
+   container.innerHTML = '<div class="chart-empty">Waiting for strike exposure and flow data...</div>';
+   return;
+ }
+ const maxGex = Math.max(1, ...rows.flatMap(row => [Math.abs(Number(row.call_gex || 0)), Math.abs(Number(row.put_gex || 0))]));
+ const maxFlow = Math.max(1, ...rows.map(row => Math.abs(Number(row.net_flow || 0))));
+ const shade = (value, max) => {
+   const intensity = 0.08 + 0.34 * Math.abs(Number(value || 0)) / max;
+   return Number(value || 0) >= 0 ? `rgba(69,200,146,${intensity})` : `rgba(237,106,96,${intensity})`;
+ };
+ const nearest = rows.reduce((best, row, index) =>
+   Math.abs(Number(row.strike) - Number(spot)) < Math.abs(Number(rows[best].strike) - Number(spot)) ? index : best, 0);
+ container.innerHTML = `<table class="exposure-heatmap"><thead><tr><th>Strike</th><th>Call GEX</th><th>Put GEX</th><th>Live Vol</th><th>Net Flow</th></tr></thead><tbody>${rows.map((row, index) => `
+   <tr class="${index === nearest ? 'spotrow' : ''}">
+     <td>${fmtNum(row.strike)}</td>
+     <td style="background:${shade(row.call_gex, maxGex)}">${fmtB(row.call_gex)}</td>
+     <td style="background:${shade(row.put_gex, maxGex)}">${fmtB(row.put_gex)}</td>
+     <td>${Number(row.live_volume || 0).toLocaleString()}</td>
+     <td style="background:${shade(row.net_flow, maxFlow)}">${Number(row.net_flow || 0).toLocaleString()}</td>
+   </tr>`).join('')}</tbody></table>`;
 }
 
 
@@ -1208,7 +1493,7 @@ function renderPriceChart(containerId, bars, spot, priceLevels, gammaLevels, fli
 
  const width = Math.max(el.clientWidth || 900, 320);
  const height = 420;
- const mL = 12, mR = 76, mT = 14, mB = 34;
+ const mL = 12, mR = 108, mT = 14, mB = 34;
  const labelW = 132;
  const plotW = width - mL - mR - labelW;
  const plotH = height - mT - mB;
@@ -1315,12 +1600,121 @@ function renderPriceChart(containerId, bars, spot, priceLevels, gammaLevels, fli
    const y = yScale(spot);
    parts.push(`<line class="spot-line" x1="${plotX}" y1="${y}" x2="${width - mR}" y2="${y}"/>`);
    parts.push(`<rect x="${width - mR + 2}" y="${y - 9}" width="${mR - 6}" height="18" rx="4" fill="#0b0e14" stroke="#4a9eff" stroke-width="1"/>`);
-   parts.push(`<text class="spot-label" x="${width - mR + 8}" y="${y + 4}" text-anchor="start">${spot.toFixed(2)}</text>`);
+  parts.push(`<text class="spot-label" x="${width - mR + 8}" y="${y + 4}" text-anchor="start">LIVE ${spot.toFixed(2)}</text>`);
  }
 
 
  parts.push(`</svg>`);
  el.innerHTML = parts.join("");
+}
+
+function renderSessionPlaybook(playbook) {
+ const root = document.getElementById('sessionPlaybook');
+ root.innerHTML = '';
+ if (!playbook || (playbook.reference == null && !playbook.gex_regime)) {
+   root.textContent = 'Waiting for the first live SPX snapshot...';
+   return;
+ }
+
+ const calibration = playbook.calibration || {};
+ const straddle = playbook.atm_straddle;
+ const metrics = [
+   ['Model regime', playbook.gex_regime || '-'],
+   ['Net GEX · OI model', fmtB(playbook.net_gex)],
+   ['VIX', playbook.vix == null ? 'Unavailable' : `${fmtNum(playbook.vix)} · ${playbook.vix_source || 'quote'}`],
+   ['1-day expected move', playbook.expected_move == null ? '-' : `±${fmtNum(playbook.expected_move)} pts`],
+   ['5-day expected move', playbook.weekly_move == null ? '-' : `±${fmtNum(playbook.weekly_move)} pts`],
+   ['Morning budget · heuristic', playbook.morning_budget == null ? '-' : `±${fmtNum(playbook.morning_budget)} pts`],
+   ['ATM straddle', straddle ? `${fmtNum(straddle.premium)} pts · $${(straddle.premium * 100).toLocaleString()} · ${fmtNum(straddle.strike)} strike` : 'Valid quotes unavailable'],
+   ['Straddle / 1-day move', playbook.straddle_to_move == null ? '-' : `${(playbook.straddle_to_move * 100).toFixed(0)}%`],
+   ['Combined ATM theta', playbook.theta_per_day == null ? 'Unavailable' : `${fmtNum(playbook.theta_per_day)} pts/day`],
+   ['Expected-move rank', calibration.percentile == null ? `Unavailable · ${calibration.count || 0}/${calibration.lookback || 60}` : `${calibration.percentile.toFixed(0)}% · ${calibration.count}/${calibration.lookback}`],
+   ['Prior closes inside band', calibration.close_inside_pct == null ? 'Unavailable' : `${calibration.close_inside_pct.toFixed(0)}% · ${calibration.count} sessions`],
+ ];
+ const metricsRoot = document.createElement('div');
+ metricsRoot.className = 'playbook-metrics';
+ metrics.forEach(([label, value]) => {
+   const metric = document.createElement('div');
+   metric.className = 'playbook-metric';
+   const title = document.createElement('label');
+   title.textContent = label;
+   const content = document.createElement('strong');
+   content.textContent = value;
+   metric.append(title, content);
+   metricsRoot.appendChild(metric);
+ });
+ root.appendChild(metricsRoot);
+
+ const body = document.createElement('div');
+ body.className = 'playbook-body';
+ const levelSection = document.createElement('section');
+ const levelTitle = document.createElement('h4');
+ levelTitle.textContent = 'Reference levels';
+ levelSection.appendChild(levelTitle);
+ const table = document.createElement('table');
+ table.className = 'playbook-table';
+ table.innerHTML = '<thead><tr><th>Level</th><th>Price</th><th>Δ Spot</th></tr></thead>';
+ const tableBody = document.createElement('tbody');
+ (playbook.levels || []).forEach(level => {
+   const row = document.createElement('tr');
+   const name = document.createElement('td');
+   name.textContent = level.name;
+   const price = document.createElement('td');
+   price.textContent = fmtNum(level.price);
+   const distance = document.createElement('td');
+   distance.textContent = `${level.distance >= 0 ? '+' : ''}${fmtNum(level.distance)}`;
+   row.append(name, price, distance);
+   tableBody.appendChild(row);
+ });
+ table.appendChild(tableBody);
+ levelSection.appendChild(table);
+
+ const ruleSection = document.createElement('section');
+ const ruleTitle = document.createElement('h4');
+ ruleTitle.textContent = 'Conditional rules';
+ ruleSection.appendChild(ruleTitle);
+ (playbook.scenarios || []).forEach(scenario => {
+   const rule = document.createElement('div');
+   rule.className = 'playbook-rule';
+   const title = document.createElement('strong');
+   title.textContent = scenario.name;
+   const status = document.createElement('span');
+   status.className = scenario.status === 'CONFIRMED' ? 'playbook-confirmed' : 'playbook-wait';
+   status.textContent = scenario.status;
+   const text = document.createElement('div');
+   text.textContent = scenario.rule;
+   const invalidation = document.createElement('div');
+   invalidation.className = 'playbook-footnote';
+   invalidation.textContent = scenario.invalid;
+   rule.append(title, status, text, invalidation);
+   ruleSection.appendChild(rule);
+ });
+ body.append(levelSection, ruleSection);
+ root.appendChild(body);
+
+ const checklist = document.createElement('ul');
+ checklist.className = 'playbook-checklist';
+ (playbook.checklist || []).forEach(item => {
+   const entry = document.createElement('li');
+   entry.textContent = item;
+   checklist.appendChild(entry);
+ });
+ root.appendChild(checklist);
+ const note = document.createElement('div');
+ note.className = 'playbook-footnote';
+ note.textContent = `${playbook.model_note || ''} ${playbook.morning_budget_note || ''} ${playbook.theta_note || ''}`.trim();
+ root.appendChild(note);
+}
+
+
+function renderSessionOhlc(session, spot) {
+ const element = document.getElementById('priceSessionOhlc');
+ const livePrice = spot == null ? 'LIVE -' : `LIVE ${fmtNum(spot)}`;
+ if (!session) {
+   element.textContent = `${livePrice} · Today O - · H - · L - · C -`;
+   return;
+ }
+ element.textContent = `${livePrice} · Today O ${fmtNum(session.open)} · H ${fmtNum(session.high)} · L ${fmtNum(session.low)} · C ${fmtNum(session.close)}`;
 }
 
 
@@ -1329,6 +1723,7 @@ async function poll() {
    const res = await fetch("/api/state");
    const data = await res.json();
    const s = data.latest;
+   renderGexDexDashboard(s);
 
 
    document.getElementById("error").textContent = s.error ? ("Error: " + s.error) : "";
@@ -1339,7 +1734,6 @@ async function poll() {
    const totalVega = (s.total_call_vega ?? 0) + (s.total_put_vega ?? 0);
    const gl = s.gamma_levels || {};
    const structure = s.price_structure || {};
-  const idea = s.trade_idea || {};
    document.getElementById("cards").innerHTML = `
      <div class="card"><div class="label">Spot</div><div class="value">${fmtNum(s.spot)}</div></div>
      <div class="card"><div class="label">Net GEX</div><div class="value ${netClass}">${fmtB(s.net_gex)}</div></div>
@@ -1363,13 +1757,16 @@ async function poll() {
    document.getElementById("maxPainTile").textContent = s.max_pain == null ? "-" : fmtNum(s.max_pain);
   renderFlowAtLevel(s);
   renderCvd(s);
-   const ideaClass = idea.action === "BUY" ? "pos" : "neg";
+  const idea = s.trade_idea || {};
+  const ideaClass = idea.action === "BUY" ? "pos" : idea.action === "SELL" ? "neg" : "trade-plan-wait";
    document.getElementById("tradeIdea").innerHTML = `
      <div class="label">Conditional SMC + GEX signal</div>
      <div class="value ${ideaClass}">${idea.action || "-"}</div>
-     <div>Entry ${fmtNum(idea.entry)} · Target ${fmtNum(idea.target)} · Stop ${fmtNum(idea.stop_loss)}</div>
+    <div>Entry ${fmtNum(idea.entry)} · TP1 ${fmtNum(idea.tp1)} · TP2 ${fmtNum(idea.tp2)} · TP3 ${fmtNum(idea.tp3)} · Stop ${fmtNum(idea.stop_loss)}</div>
      <div class="note">HTF ${idea.htf_bias || "-"} (${idea.htf_bullish_count || 0} bullish / ${idea.htf_bearish_count || 0} bearish) · 1M ${idea.entry_1m_bias || "-"} ${idea.entry_1m_confirmation || "-"}</div>
      <div class="note">SMC ${idea.smc_bias || "-"} · BOS ${idea.bos || "-"} · ${idea.reason || "-"}</div>
+    <div class="note">Trend ${idea.trend_strength || "NEUTRAL"} (${idea.trend_strength_score ?? 0}/100) · strength ${idea.strength_condition ? idea.strength_condition.toLowerCase() : "ref"} ${fmtNum(idea.strength_level)} · weak ${idea.weakness_condition ? idea.weakness_condition.toLowerCase() : "ref"} ${fmtNum(idea.weakness_level)}</div>
+    <div class="note">AMD ${idea.amd_phase || "UNCONFIRMED"}${idea.amd_direction ? " · " + idea.amd_direction : ""} · ${idea.amd_evidence || "-"} · weakness: ${(idea.weakness_signals || []).join(", ") || "none detected"}</div>
      <div class="note">Liquidity: ${idea.liquidity_path || "INTERNAL RANGE"} · external target ${fmtNum((idea.external_liquidity || {}).buy_side?.price || (idea.external_liquidity || {}).sell_side?.price)}</div>
      <div class="note">FVG: ${idea.active_fvg ? idea.active_fvg.direction + " " + fmtNum(idea.active_fvg.low) + "-" + fmtNum(idea.active_fvg.high) : "-"} · Inverse FVG: ${idea.inverse_fvg?.direction || "-"}</div>
      <div class="note">1M zone: ${idea.entry_1m_zone ? (idea.entry_1m_zone.direction || "ZONE") + " " + fmtNum(idea.entry_1m_zone.low) + "-" + fmtNum(idea.entry_1m_zone.high) : "-"} · 1M SD +1 ${fmtNum((idea.entry_1m_stddev || {}).upper_1)} / -1 ${fmtNum((idea.entry_1m_stddev || {}).lower_1)}</div>
@@ -1378,9 +1775,11 @@ async function poll() {
    const historyRows = (data.trade_history || []).map(item => `
      <tr>
        <td>${item.time || "-"}</td>
-       <td class="${item.action === "BUY" ? "buy" : "sell"}">${item.action || "-"}</td>
+      <td class="${item.action === "BUY" ? "buy" : item.action === "SELL" ? "sell" : ""}">${item.action || "-"}</td>
        <td>${fmtNum(item.entry)}</td>
-       <td>${fmtNum(item.target)}</td>
+      <td>${fmtNum(item.tp1)}</td>
+      <td>${fmtNum(item.tp2)}</td>
+      <td>${fmtNum(item.tp3)}</td>
        <td>${fmtNum(item.stop_loss)}</td>
        <td>${item.smc_bias || "-"}</td>
        <td>${item.liquidity_path || "-"}</td>
@@ -1388,7 +1787,7 @@ async function poll() {
      </tr>
    `).join("");
    history.innerHTML = historyRows ? `
-     <table><thead><tr><th>Time</th><th>Action</th><th>Entry</th><th>Target</th><th>Stop</th><th>SMC</th><th>Liquidity</th><th>BOS</th></tr></thead>
+    <table><thead><tr><th>Time</th><th>Action</th><th>Entry</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Stop</th><th>SMC</th><th>Liquidity</th><th>BOS</th></tr></thead>
      <tbody>${historyRows}</tbody></table>
    ` : '<div class="note" style="padding:12px 16px;">Waiting for the first trade idea...</div>';
 
@@ -1405,7 +1804,10 @@ async function poll() {
    addGamma(gl.put_wall_below, "PUT γ");
 
 
-   renderPriceChart("priceChart", s.price_bars, s.spot, s.price_levels, chartGammaLevels, s.flip_level);
+  renderSessionOhlc(s.price_session_ohlc, s.spot);
+  renderSessionPlaybook(s.session_playbook);
+  renderPriceChart("priceChart", s.price_bars, s.spot, s.price_levels, chartGammaLevels, s.flip_level);
+  renderPriceChart("priceDashboardChart", s.price_bars, s.spot, s.price_levels, chartGammaLevels, s.flip_level);
 
 
    function fillGammaLevels(elemId, rows) {
@@ -1510,7 +1912,7 @@ async function poll() {
    commentary.innerHTML = "";
    (s.commentary || []).forEach(line => {
      const div = document.createElement("div");
-     div.textContent = line;
+     div.textContent = s.updated_at ? `[${s.updated_at}] ${line}` : line;
      commentary.appendChild(div);
    });
 
@@ -1520,6 +1922,15 @@ async function poll() {
  }
 }
 
+
+const exportDateInput = document.getElementById('exportDate');
+function updateExportLinks() {
+ const exportDate = exportDateInput.value;
+ document.getElementById('gexCsvExport').href = `/exports/gex/${exportDate}.csv`;
+ document.getElementById('flowCsvExport').href = `/exports/options_flow/${exportDate}.csv`;
+}
+exportDateInput.addEventListener('change', updateExportLinks);
+updateExportLinks();
 
 poll();
 setInterval(poll, POLL_MS);
